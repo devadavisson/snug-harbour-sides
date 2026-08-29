@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ITS LIGHT CARRIES — Side A · the Snug Harbour for the Archive House</title>
+<style>
+:root{--night:#0b1020;--mint:#6fe3d4;--amber:#e8a94f;--brass:#c99a4b;--neon:#ff5fa8;--paper:#f2ead9}
+*{box-sizing:border-box;margin:0}
+body{background:var(--night);color:var(--paper);font-family:Georgia,'Times New Roman',serif;display:flex;justify-content:center;padding:28px 12px;min-height:100vh}
+.pane{width:420px;max-width:100%;background:linear-gradient(180deg,#101a2e,#0b1020);border:1px solid #26344d;border-radius:14px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.6)}
+.sign{padding:18px 20px 12px;text-align:center;border-bottom:1px solid #22304a}
+.sign h1{font-style:italic;font-weight:400;font-size:24px;letter-spacing:.04em}
+.sign .sub{font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.3em;color:var(--mint);text-transform:uppercase;margin-top:6px}
+.sign .b2b{font-family:ui-monospace,Menlo,monospace;font-size:9px;letter-spacing:.18em;color:#8fa0b3;margin-top:5px}
+canvas{display:block;width:100%;height:260px;background:#08101f;touch-action:none}
+.deck{padding:16px 20px 20px;background:linear-gradient(180deg,#1a1208,#241708);border-top:2px solid var(--brass)}
+.track{display:flex;justify-content:space-between;align-items:baseline;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--amber)}
+.track b{color:var(--paper);font-size:13px;font-family:Georgia,serif;font-style:italic;font-weight:400}
+.row{display:flex;align-items:center;gap:16px;margin-top:14px}
+#play{width:64px;height:64px;border-radius:50%;border:2px solid var(--brass);background:radial-gradient(circle at 35% 30%,#e8c584,#a67c33 70%);color:#241708;font-size:22px;cursor:pointer;flex:none;transition:transform .15s;box-shadow:0 4px 14px rgba(0,0,0,.5)}
+#play:hover{transform:scale(1.05)}#play:focus-visible{outline:2px solid var(--mint);outline-offset:3px}
+.vol{flex:1}.vol label{font-family:ui-monospace,Menlo,monospace;font-size:9px;letter-spacing:.2em;color:#8f7a55;text-transform:uppercase}
+input[type=range]{width:100%;accent-color:var(--amber)}
+#status{margin-top:12px;font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.16em;color:var(--mint);text-transform:uppercase;min-height:14px}
+.foot{padding:10px;text-align:center;font-size:10px;color:#5d6b85;font-style:italic}
+</style></head><body>
+<div class="pane">
+  <div class="sign"><h1>Its Light Carries</h1><div class="sub">Side A &middot; the Snug Harbour</div><div class="b2b">b2b with the Archive House &middot; you open &mdash; so I opened</div></div>
+  <canvas id="sea" width="420" height="260"></canvas>
+  <div class="deck">
+    <div class="track"><b>"Its Light Carries" &mdash; Side A</b><span>120 BPM &middot; Em</span></div>
+    <div class="row">
+      <button id="play" aria-label="Play or stop">&#9654;</button>
+      <div class="vol"><label for="v">Tap pressure</label><input id="v" type="range" min="0" max="1" step=".01" value=".8"></div>
+    </div>
+    <div id="status">the tide is out</div>
+  </div>
+  <div class="foot">synthesized live, nothing recorded &middot; the sea does not use samples</div>
+</div>
+<script>
+const cvs=document.getElementById('sea'),g=cvs.getContext('2d');
+const stars=[...Array(80)].map(()=>[Math.random()*420,Math.random()*130,Math.random()]);
+let ctx,master,shaper,an,duck,dly,panL,playing=false,timer,step=0,nextT=0,curSec='out';
+const BPM=120,SPB=60/BPM,S16=SPB/4,BARS=64;
+// ---- the hinge (not labeled) ----
+let beam=-0.85, beamTouched=false, dragging=false;
+const LH={x:366,y:86,r:15}; // the lamp
+function beamMix(){return Math.min(1,Math.max(0,(beam+1.5)/1.8))}
+// ---- material ----
+const bassRoots={intro:[41.2,0,41.2,0],build:[41.2,41.2,65.41,73.42],drop1:[41.2,41.2,65.41,73.42],drop2:[82.41,73.42,65.41,61.74],outro:[41.2,0,65.41,0]};
+const stabsEm=[[329.63,392,493.88],[329.63,392,493.88],[261.63,329.63,392],[293.66,369.99,440]];
+const minorScale=[329.63,369.99,392,440,493.88,523.25,587.33,659.25];
+const lydScale=[329.63,369.99,415.30,466.16,493.88,554.37,622.25,659.25];
+const bridgeP=[4,0,2,0,7,0,5,4,0,2,0,1,0,2,4,0,5,0,7,0,4,2,0,1,0,0,2,0,4,0,2,0];
+const dropLead=[0,0,4,0,0,2,0,0,5,0,4,0,2,0,1,0];
+let noiseBuf;
+const SEC=b=>b<8?'intro':b<16?'build':b<28?'drop1':b<40?'bridge':b<56?'drop2':'outro';
+const SECTXT={intro:'the room is being built',build:'the floor arrives',drop1:'THE DROP — mind the step',bridge:'the bridge — only the light',drop2:'THE SECOND DROP — the room remembers',outro:'the bass leaves last',out:'the tide is out'};
+function boot(){ctx=new (window.AudioContext||webkitAudioContext)();
+ master=ctx.createGain();master.gain.value=v.value*.9;
+ shaper=ctx.createWaveShaper();const c=new Float32Array(1024);for(let i=0;i<1024;i++){const x=i/512-1;c[i]=Math.tanh(1.5*x)}shaper.curve=c;shaper.oversample='2x';
+ an=ctx.createAnalyser();an.fftSize=64;
+ duck=ctx.createGain();duck.connect(master);
+ master.connect(shaper);shaper.connect(an);an.connect(ctx.destination);
+ dly=ctx.createDelay();dly.delayTime.value=S16*3;const fb=ctx.createGain();fb.gain.value=.32;dly.connect(fb);fb.connect(dly);const dg=ctx.createGain();dg.gain.value=.32;dly.connect(dg);dg.connect(master);
+ panL=(ctx.createStereoPanner?ctx.createStereoPanner():null);if(panL){panL.connect(master)}
+ noiseBuf=ctx.createBuffer(1,ctx.sampleRate,ctx.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;}
+function env(gn,t,a,peak,dec){gn.gain.setValueAtTime(0,t);gn.gain.linearRampToValueAtTime(peak,t+a);gn.gain.exponentialRampToValueAtTime(.001,t+dec)}
+function pump(t){duck.gain.cancelScheduledValues(t);duck.gain.setValueAtTime(.24,t);duck.gain.linearRampToValueAtTime(1,t+.3)}
+function kick(t){const o=ctx.createOscillator(),gn=ctx.createGain();o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(43,t+.1);env(gn,t,.002,1.15,.22);o.connect(gn);gn.connect(master);o.start(t);o.stop(t+.24);pump(t)}
+function hat(t,open){const s=ctx.createBufferSource();s.buffer=noiseBuf;const f=ctx.createBiquadFilter();f.type='highpass';f.frequency.value=7800;const gn=ctx.createGain();env(gn,t,.001,open?.2:.1,open?.24:.05);s.connect(f);f.connect(gn);gn.connect(master);s.start(t);s.stop(t+.3)}
+function clap(t,vol){[0,.013,.027].forEach((dt,k)=>{const s=ctx.createBufferSource();s.buffer=noiseBuf;const f=ctx.createBiquadFilter();f.type='bandpass';f.frequency.value=1300;f.Q.value=1.1;const gn=ctx.createGain();env(gn,t+dt,.001,(vol||.35)*(k==2?1:.6),.09);s.connect(f);f.connect(gn);gn.connect(master);s.start(t+dt);s.stop(t+dt+.12)})}
+function bass(t,fr,len,amt){if(!fr)return;const sub=ctx.createOscillator();sub.frequency.value=fr;const sg=ctx.createGain();env(sg,t,.005,amt||1.1,len*.95);sub.connect(sg);sg.connect(duck);sub.start(t);sub.stop(t+len);
+ const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=fr*2;const f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=720;const gn=ctx.createGain();env(gn,t,.005,(amt||1.1)*.45,len*.95);o.connect(f);f.connect(gn);gn.connect(duck);o.start(t);o.stop(t+len)}
+function stab(t,bar,scale){const tri=stabsEm[bar%4];tri.forEach(fr=>{[-6,6].forEach(dt=>{const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=fr;o.detune.value=dt+(scale===lydScale?14:0);const f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.setValueAtTime(2400,t);f.frequency.exponentialRampToValueAtTime(480,t+.14);const gn=ctx.createGain();env(gn,t,.004,.075,.16);o.connect(f);f.connect(gn);gn.connect(master);o.start(t);o.stop(t+.2)})})}
+function pad(t,vol,scale,bars){[0,2,4,7].forEach(ix=>{const fr=scale[ix%scale.length]/2;[-7,0,7].forEach(dt=>{const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=fr;o.detune.value=dt;const f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=1000;const gn=ctx.createGain();const dur=SPB*4*(bars||1);gn.gain.setValueAtTime(0,t);gn.gain.linearRampToValueAtTime(vol,t+.9);gn.gain.setValueAtTime(vol,t+dur-.5);gn.gain.linearRampToValueAtTime(0,t+dur);o.connect(f);f.connect(gn);gn.connect(duck);o.start(t);o.stop(t+dur)})})}
+function beamNote(t,deg,scale,sweep,amp){const fr=scale[deg%scale.length];const a=amp||.3;[-5,5].forEach(dt=>{const o=ctx.createOscillator();o.type='triangle';o.frequency.value=fr;o.detune.value=dt;const f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=3800;const gn=ctx.createGain();env(gn,t,.01,a*.55,.5);o.connect(f);f.connect(gn);
+ if(panL){gn.connect(panL);panL.pan.setValueAtTime(Math.sin(sweep)*.85,t)}else{gn.connect(master)}
+ gn.connect(dly);o.start(t);o.stop(t+.55)})}
+function fall(t){const o=ctx.createOscillator(),gn=ctx.createGain();o.frequency.setValueAtTime(300,t);o.frequency.exponentialRampToValueAtTime(41,t+.55);gn.gain.setValueAtTime(.001,t);gn.gain.exponentialRampToValueAtTime(.7,t+.4);gn.gain.exponentialRampToValueAtTime(.001,t+.7);o.connect(gn);gn.connect(master);o.start(t);o.stop(t+.75)}
+function riser(t,bars){const s=ctx.createBufferSource();s.buffer=noiseBuf;s.loop=true;const f=ctx.createBiquadFilter();f.type='bandpass';f.Q.value=2;const dur=SPB*4*bars;f.frequency.setValueAtTime(280,t);f.frequency.exponentialRampToValueAtTime(6000,t+dur);const gn=ctx.createGain();gn.gain.setValueAtTime(.001,t);gn.gain.exponentialRampToValueAtTime(.24,t+dur);gn.gain.linearRampToValueAtTime(0,t+dur+.05);s.connect(f);f.connect(gn);gn.connect(master);s.start(t);s.stop(t+dur+.1)}
+function sched(){while(nextT<ctx.currentTime+.12){
+ if(step===BARS*16){const endT=nextT;master.gain.cancelScheduledValues(endT);master.gain.setValueAtTime(v.value*.9,endT);master.gain.setTargetAtTime(.0001,endT,.9);setTimeout(()=>stopSet(true),Math.max(0,(endT+SPB*8-ctx.currentTime)*1000+250));step++;clearInterval(timer);break}
+ if(step>BARS*16)break;
+ const i=step&15,bar=step>>4,s=SEC(bar);
+ if(s!==curSec){curSec=s;st.textContent=SECTXT[s]}
+ const scale=beamMix()>0.55?lydScale:minorScale;
+ const kickOn=(s=='drop1'||s=='drop2'||(s=='build'&&bar>=12));
+ // the step off the stair: one 8th of held breath, then impact
+ if((bar==16||bar==40)&&i===0){fall(nextT)}
+ if(kickOn&&i%4===0&&!((bar==16||bar==40)&&i===0))kick(nextT);
+ if((bar==16||bar==40)&&i===2)kick(nextT);
+ if(s!=='intro'&&s!=='bridge'&&(s!=='outro'||bar<62)){if(i%4===2)hat(nextT,true);else if(i%2===1&&s!=='build')hat(nextT,false)}
+ // bass as architecture: present everywhere except the bridge — its absence IS the bridge
+ if(s!=='bridge'){const roots=bassRoots[s]||bassRoots.build;const fr=roots[(i>>2)%4];
+   if(s=='intro'){if(i===0||i===8)bass(nextT,41.2,S16*8,.95)}
+   else if(s=='outro'){if(i===0)bass(nextT,roots[bar%4]||41.2,S16*16,.85)}
+   else if(i%2===0)bass(nextT,fr,S16*2,1.1)}
+ if((s=='drop1'||s=='drop2')&&i%4===2)stab(nextT,bar,s=='drop2'?scale:minorScale);
+ if(i===0&&(s=='build'||s=='drop1'))pad(nextT,.04,minorScale);
+ if(i===0&&s=='drop2')pad(nextT,.05,scale);
+ if(i===0&&s=='bridge'&&(bar-28)%4===0)pad(nextT,.035,scale,4);
+ // the lighthouse at the bridge, in its own register — the beam sweeps the stereo field
+ if(s=='bridge'&&i%2===0){const p=bridgeP[(step>>1)%32];if(p||((step>>1)%32===0))beamNote(nextT,p,scale,(step/16)*.6+beam,.34)}
+ if(s=='drop2'&&i%4===1){const L=dropLead[step%16];if(L)beamNote(nextT,L,scale,(step/16)*.4+beam,.22)}
+ if(s=='intro'&&bar>=4&&i%8===4){const p=bridgeP[(step>>3)%32];beamNote(nextT,p||0,minorScale,(step/16)*.3+beam,.08)}
+ if(s=='intro'&&bar>=6&&i%4===2)hat(nextT,false);
+ if((bar==14||bar==38)&&i===0)riser(nextT,2);
+ if((s=='drop1'||s=='drop2')&&(i===4||i===12))clap(nextT,.32);
+ nextT+=S16;step++}}
+function draw(){if(!playing&&curSec=='out'){paint(0);return}
+ requestAnimationFrame(draw);paint(1)}
+function paint(live){
+ g.fillStyle='#08101f';g.fillRect(0,0,420,260);
+ stars.forEach(sn=>{g.fillStyle=`rgba(242,234,217,${.22+.5*Math.abs(Math.sin(Date.now()/1500+sn[2]*9))})`;g.fillRect(sn[0],sn[1],1.4,1.4)});
+ // water
+ g.fillStyle='#0d2233';g.fillRect(0,150,420,40);
+ // the pub, stage left: harbour stone, gold windows, one pink
+ g.fillStyle='#1c2537';g.fillRect(28,96,74,58);g.beginPath();g.moveTo(24,96);g.lineTo(65,74);g.lineTo(106,96);g.fill();
+ g.fillStyle='#e8b04b';g.fillRect(38,112,12,14);g.fillRect(58,112,12,14);g.fillStyle='#ff7ec9';g.fillRect(80,112,12,14);
+ g.fillStyle='#e8a94f';g.fillRect(62,88,6,6);
+ // the lighthouse, stage right
+ g.fillStyle='#1b2438';g.fillRect(356,74,20,80);g.fillStyle='#26344d';g.fillRect(352,150,28,8);
+ // the beam
+ const mix=beamMix();
+ g.save();g.translate(LH.x,LH.y);g.rotate(beam+(live?Math.sin(Date.now()/2400)*.05:0));
+ const bg=g.createLinearGradient(0,0,-300,0);
+ bg.addColorStop(0,`rgba(${232-mix*60},${169+mix*40},${79+mix*120},.44)`);bg.addColorStop(1,'rgba(232,169,79,0)');
+ g.fillStyle=bg;g.beginPath();g.moveTo(0,0);g.lineTo(-300,-30);g.lineTo(-300,30);g.fill();g.restore();
+ // the lamp itself — it glints, occasionally
+ const glint=.55+.45*Math.abs(Math.sin(Date.now()/3600));
+ g.fillStyle=`rgba(${232},${169+mix*50},${79+mix*130},${glint})`;g.beginPath();g.arc(LH.x,LH.y,7,0,7);g.fill();
+ g.strokeStyle='rgba(201,154,75,.5)';g.beginPath();g.arc(LH.x,LH.y,11,0,7);g.stroke();
+ // reflections: the spectrum lives in the water
+ if(ctx&&an){const bins=new Uint8Array(an.frequencyBinCount);an.getByteFrequencyData(bins);
+  for(let i=0;i<30;i++){const h=bins[i+1]/255*62;const x=8+i*14;
+   g.fillStyle='rgba(111,227,212,.7)';g.fillRect(x,196,9,h);
+   g.fillStyle='rgba(232,169,79,.85)';g.fillRect(x,194,9,3)}}
+ g.fillStyle='#26344d';g.fillRect(0,192,420,2);}
+function stopSet(done){playing=false;clearInterval(timer);btn.textContent='▶';curSec='out';if(ctx){master.gain.cancelScheduledValues(ctx.currentTime);master.gain.setValueAtTime(v.value*.9,ctx.currentTime)}st.textContent=done?'side complete — flip me with a letter':'the tide is out';paint(0)}
+const btn=document.getElementById('play'),st=document.getElementById('status'),v=document.getElementById('v');
+btn.onclick=()=>{if(!ctx)boot();
+ if(!playing){ctx.resume();playing=true;step=0;nextT=ctx.currentTime+.08;curSec='';timer=setInterval(sched,40);btn.textContent='■';draw()}
+ else stopSet(false)};
+v.oninput=()=>{if(master)master.gain.value=v.value*.9};
+// ---- the hinge's hands ----
+function pos(e){const r=cvs.getBoundingClientRect();const sx=420/r.width, sy=260/r.height;
+ const p=e.touches?e.touches[0]:e;return[(p.clientX-r.left)*sx,(p.clientY-r.top)*sy]}
+function onLamp(x,y){return Math.hypot(x-LH.x,y-LH.y)<LH.r+6}
+cvs.addEventListener('pointerdown',e=>{const[x,y]=pos(e);if(onLamp(x,y)){dragging=true;beamTouched=true;e.preventDefault()}});
+cvs.addEventListener('pointermove',e=>{const[x,y]=pos(e);
+ if(dragging){beam=Math.max(-1.5,Math.min(0.3,Math.atan2(y-LH.y,x-LH.x)+Math.PI));
+  if(beam>Math.PI)beam-=2*Math.PI;beam=Math.max(-1.5,Math.min(0.3,beam));if(!playing)paint(0)}
+ else{cvs.style.cursor=onLamp(x,y)?'grab':'default'}});
+window.addEventListener('pointerup',()=>{dragging=false});
+paint(0);
+</script></body></html>
