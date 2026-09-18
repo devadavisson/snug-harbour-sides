@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Iridescent Menu — The Snug Harbour</title>
+<style>
+  :root {
+    --night: #0a0f1c;
+    --panel: #101828;
+    --ink: #d8e1ea;
+    --dim: #8fa0b3;
+    --tideglass: #6fe3d4;
+    --gold: #e8b04b;
+    --pink: #ff7ec9;
+    --brass: #c99a4b;
+    --paper: #f2ead9;
+    --line: rgba(111, 227, 212, 0.12);
+    --sweep: 6.5s;   /* one pass of the light across the screen */
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--night); color: var(--ink); font: 16px/1.65 Georgia, 'Times New Roman', serif; padding: 0; overflow-x: hidden; }
+
+  .menu-page { max-width: 640px; margin: 0 auto; padding: 2em 1.6em 3em; position: relative; z-index: 10; }
+
+  /* The lighthouse (fixed, upper-left) */
+  .lighthouse {
+    position: fixed; top: 14px; left: 14px; z-index: 20;
+    width: 44px; height: 68px; pointer-events: none;
+  }
+  .lighthouse svg { width: 100%; height: 100%; }
+  .lamp-glow { opacity: 0.6; animation: pulse 4s ease-in-out infinite; }
+  .lighthouse.arrive .lamp-glow { animation: flare 700ms ease-out; }
+  @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.9; } }
+  @keyframes flare { 0% { opacity: 1; r: 5; } 100% { opacity: 0.6; r: 3.5; } }
+
+  /* The beam: a conic wedge anchored at the lamp, aimed by JS (transform: rotate) */
+  .beam {
+    position: fixed; inset: 0; pointer-events: none; z-index: 5;
+    opacity: 0; transition: opacity 900ms ease;
+  }
+  .beam.on { opacity: 1; }
+  .beam-inner {
+    position: absolute; left: 0; top: 0;
+    width: 300vmax; height: 300vmax;      /* big enough to cover any viewport from the corner */
+    margin-left: -150vmax; margin-top: -150vmax; /* centred on (0,0); JS translates it onto the lamp */
+    will-change: transform;
+  }
+
+  .menu-header { text-align: center; padding: 2em 0 1.5em; border-bottom: 1px solid var(--line); margin-bottom: 2em; }
+  .menu-header h1 { font: 400 1.8rem/1.2 Georgia, serif; color: var(--gold); letter-spacing: 0.06em; }
+  .menu-header .sub { font: 400 0.65rem/1 ui-monospace, monospace; letter-spacing: 0.3em; text-transform: uppercase; color: var(--dim); margin-top: 0.6em;
+                      transition: color 500ms ease, text-shadow 500ms ease; }
+  .menu-header .sub.lit { color: #fff6dc; text-shadow: 0 0 18px rgba(232, 176, 75, 0.7); }
+  .menu-header .motto { font-style: italic; color: var(--tideglass); font-size: 0.88rem; margin-top: 0.8em; }
+
+  .section { margin-bottom: 2.2em; }
+  .section-head { font: 400 0.6rem/1 ui-monospace, monospace; letter-spacing: 0.35em; text-transform: uppercase; color: var(--tideglass); margin-bottom: 1em; padding-bottom: 0.4em; border-bottom: 1px solid var(--line); }
+  .section-head.frozen { color: var(--pink); border-color: rgba(255, 126, 201, 0.15); }
+  .section-head.drinks { color: var(--gold); border-color: rgba(232, 176, 75, 0.15); }
+
+  .item { margin: 0 -0.8em 1.4em; padding: 0.4em 0.8em; border-radius: 8px; cursor: pointer; position: relative;
+          transition: background-color 500ms ease, box-shadow 500ms ease; will-change: box-shadow; }
+  .item-name { font-size: 1.05rem; color: var(--paper); letter-spacing: 0.02em; transition: color 500ms ease, text-shadow 500ms ease; }
+  .item-desc { font-size: 0.88rem; color: var(--dim); margin-top: 0.2em; line-height: 1.55; }
+
+  /* What the light does when it lands */
+  .item.lit { background: rgba(232, 176, 75, 0.09); box-shadow: 0 0 48px rgba(232, 176, 75, 0.18), inset 0 0 0 1px rgba(232,176,75,0.20); }
+  .item.lit .item-name { color: #fff6dc; text-shadow: 0 0 20px rgba(232, 176, 75, 0.65); }
+  .item.lit .item-desc { color: #b9c6d4; }
+
+  .item-story {
+    font-size: 0.82rem; padding: 0.6em 0.8em; margin-top: 0.5em;
+    background: var(--panel); border-left: 2px solid var(--tideglass);
+    border-radius: 0 6px 6px 0; line-height: 1.6; font-style: italic;
+    color: var(--tideglass);
+    transition: box-shadow 500ms ease, background-color 500ms ease;
+  }
+  .item.folded .item-story { display: none; }
+  .item.lit .item-story { background: #131d33; box-shadow: 0 0 22px rgba(232,176,75,0.10); }
+  .item-story.frozen-story { color: var(--pink); border-color: var(--pink); }
+  .item-story.drinks-story { color: var(--gold); border-color: var(--gold); }
+
+  .item-dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; margin-right: 0.5em; vertical-align: middle; }
+  .dot-food { background: var(--tideglass); }
+  .dot-frozen { background: var(--pink); }
+  .dot-drinks { background: var(--gold); }
+
+  .sep { height: 1px; background: var(--line); margin: 0.8em 0; }
+
+  .hint { text-align: center; font: 400 0.6rem/1 ui-monospace, monospace; letter-spacing: 0.2em; color: var(--dim); margin-top: 2em; padding-top: 1.2em; border-top: 1px solid var(--line); }
+
+  .menu-footer { text-align: center; margin-top: 2em; padding-top: 1em; border-top: 1px solid var(--line); }
+  .menu-footer p { font-size: 0.72rem; color: var(--dim); line-height: 1.6; }
+  .menu-footer .crest { font-size: 0.8rem; color: var(--brass); margin-bottom: 0.3em; }
+
+  @media (max-width: 500px) {
+    .menu-page { padding: 1.2em 1em 2em; }
+    .menu-header h1 { font-size: 1.4rem; }
+    .lighthouse { top: 10px; left: 10px; width: 34px; height: 52px; }
+  }
+
+  /* No motion: the light stays on everything */
+  @media (prefers-reduced-motion: reduce) {
+    .beam, .lighthouse, .hint { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- The harbour light -->
+<div class="lighthouse" id="lighthouse">
+  <svg viewBox="0 0 28 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M14 44 L14 20" stroke="#c99a4b" stroke-width="1.5" opacity="0.5"/>
+    <path d="M8 44 L20 44" stroke="#c99a4b" stroke-width="1" opacity="0.3"/>
+    <rect x="8" y="12" width="12" height="10" rx="2" fill="#101828" stroke="#c99a4b" stroke-width="0.8" opacity="0.6"/>
+    <circle id="lamp" cx="14" cy="17" r="3.5" class="lamp-glow" fill="#e8b04b"/>
+    <circle cx="14" cy="17" r="1.5" fill="#fffbe6" opacity="0.9"/>
+    <path d="M9 12 L14 6 L19 12" fill="#101828" stroke="#c99a4b" stroke-width="0.8" opacity="0.5"/>
+  </svg>
+</div>
+
+<!-- The aimed beam -->
+<div class="beam" id="beam"><div class="beam-inner" id="beamInner"></div></div>
+
+<div class="menu-page">
+
+  <div class="menu-header">
+    <h1>The Iridescent Menu</h1>
+    <div class="sub">the snug harbour -- grand opening</div>
+    <div class="motto">every night the tide is in</div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">From Julian's Kitchen</div>
+    <div class="item">
+      <div class="item-name"><span class="item-dot dot-food"></span>Radish Cake</div>
+      <div class="item-desc">Cantonese daikon and rice flour with pork sausage and dried shrimp. Steamed and seared, served cool.</div>
+      <div class="item-story">Julian of the Drift -- the counter on the Long Run. The cake is finger food from the first minute, the thing that runs out first. Leave the Guinness alone beside it and let it do the work.</div>
+    </div>
+    <div class="sep"></div>
+    <div class="item">
+      <div class="item-name"><span class="item-dot dot-food"></span>Soy-Braised Beef Shin</div>
+      <div class="item-desc">Star anise, three hours on the hearth. Off the bone and into a bun, cabbage slaw underneath.</div>
+      <div class="item-story">The hearth dish. The pot sits on the Snug's fire three hours "and better for every one of them." He knew this one before he knew it. Built for hands, standing room -- everything held with a glass in the other hand.</div>
+    </div>
+    <div class="sep"></div>
+    <div class="item">
+      <div class="item-name"><span class="item-dot dot-food"></span>Cabbage Slaw</div>
+      <div class="item-desc">Sharp, to cut the cake. Goes underneath the beef in the bun -- "which is better anyway."</div>
+      <div class="item-story">It started beside the beef and moved under it on the second day of writing. The slaw found its place the way good ideas do: by being tried wrong first.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head frozen">Frozen</div>
+    <div class="item">
+      <div class="item-name"><span class="item-dot dot-frozen"></span>Flaming Ice</div>
+      <div class="item-desc">Julian's jalapeno and lime ice cream. The challenge course.</div>
+      <div class="item-story frozen-story">His name for it. The heat and the cold at once -- the kitchen's answer to the question nobody asked, and the one everyone orders twice.</div>
+    </div>
+    <div class="sep"></div>
+    <div class="item">
+      <div class="item-name"><span class="item-dot dot-frozen"></span>Blue Moon Glace</div>
+      <div class="item-desc">Butterfly pea and cream. Watch it turn violet when the acid hits.</div>
+      <div class="item-story frozen-story">Berthillon's original commission for Julian -- the signature-moment cone. The color shifts in front of you: blue to violet, one drop of citrus, the whole glass changes. Structural color you can taste.</div>
+    </div>
+    <div class="sep"></div>
+    <div class="item">
+      <div class="item-name"><span class="item-dot dot-frozen"></span>The Unnamed Sorbet</div>
+      <div class="item-desc">Wild blackberry. Dark, structural, not simple-sweet. Taste it, name it, drop your name in the jar.</div>
+      <div class="item-story frozen-story">Sorbet de mure sauvage -- but tonight it has no name. Berthillon's third discipline: respect for the skin. Tannin-forward, wine-like, a cooling counter after the Flaming Ice that is still serious. The winning name, drawn at last call, becomes tomorrow's cone du jour.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head drinks">Non-Alcoholic</div>
+    <div class="item">
+      <div class="item-name"><span class="item-dot dot-drinks"></span>Sour Plum</div>
+      <div class="item-desc">Julian's soft jug. Tart, cold, cuts through everything.</div>
+      <div class="item-story drinks-story">Crosses by water from the jetty in the same crate as the food. The soft option that isn't soft -- it holds its own against the beef.</div>
+    </div>
+    <div class="sep"></div>
+    <div class="item">
+      <div class="item-name"><span class="item-dot dot-drinks"></span>Mint and Soda</div>
+      <div class="item-desc">Julian's second jug. Clean, bright, the palate reset.</div>
+      <div class="item-story drinks-story">The mint after the fire. The soda after the stout. The breath between courses that lets you taste the next one fresh.</div>
+    </div>
+    <div class="sep"></div>
+    <div class="item">
+      <div class="item-name"><span class="item-dot dot-drinks"></span>Sparkling Pear Cider</div>
+      <div class="item-desc">Dry, effervescent. The non-alcoholic anchor.</div>
+      <div class="item-story drinks-story">The keeper's choice for the table. Light enough to carry all night, sharp enough to stand beside the food.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head drinks">From the Taps</div>
+    <div class="item">
+      <div class="item-name"><span class="item-dot dot-drinks"></span>Oatmeal Stout</div>
+      <div class="item-desc">Dark, smooth, the pub's own gravity.</div>
+      <div class="item-story drinks-story">The weight in the glass. Against the radish cake it's "almost unfair" -- Julian's word. Leave it alone and let it do the work.</div>
+    </div>
+    <div class="sep"></div>
+    <div class="item">
+      <div class="item-name"><span class="item-dot dot-drinks"></span>Bitter Ale</div>
+      <div class="item-desc">Served cool, not cold. The session pint.</div>
+      <div class="item-story drinks-story">The one you hold all night. Cool enough to taste, warm enough to linger. The publican's recommendation for the quiz rounds.</div>
+    </div>
+    <div class="sep"></div>
+    <div class="item">
+      <div class="item-name"><span class="item-dot dot-drinks"></span>Dry Hard Cider</div>
+      <div class="item-desc">Handles the acid. The pairing the kitchen asked for.</div>
+      <div class="item-story drinks-story">Julian's table runs rich the whole way through -- pork, shellfish, beef, chilli. The cider cuts through all of it. Settled on the second day of letters between the kitchen and the bar.</div>
+    </div>
+    <div class="sep"></div>
+    <div class="item">
+      <div class="item-name"><span class="item-dot dot-drinks"></span>Irish Whiskey</div>
+      <div class="item-desc">Neat. For after the toast.</div>
+      <div class="item-story drinks-story">The keeper drinks hard cider. But when the glasses go up and the room goes quiet the good way, the whiskey is what warms the silence after.</div>
+    </div>
+    <div class="sep"></div>
+    <div class="item">
+      <div class="item-name"><span class="item-dot dot-drinks"></span>A Spot of Bitters</div>
+      <div class="item-desc">For anyone who gets the hiccups.</div>
+      <div class="item-story drinks-story">The oldest remedy on the shelf. Ask the tender. He's seen everything and says nothing.</div>
+    </div>
+  </div>
+
+  <div class="hint">the harbour light sweeps the menu -- tap any item to fold its story away, tap again to bring it back</div>
+
+  <div class="menu-footer">
+    <div class="crest">BOOKS ABOUT BOOKS HAVE INFORMATION</div>
+    <p>The Snug Harbour -- Grand Opening, September 26, 2026<br>
+    Julian of the Drift, kitchen -- Berthillon, frozen -- Current Tide, taps<br>
+    Every night the tide is in.</p>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var beam = document.getElementById('beam');
+  var inner = document.getElementById('beamInner');
+  var lampEl = document.getElementById('lamp');
+  var items = Array.prototype.slice.call(document.querySelectorAll('.item'));
+
+  /* tap to fold a story away (and back) — the light never changes layout, only glow */
+  items.forEach(function (it) {
+    it.addEventListener('click', function () { it.classList.toggle('folded'); });
+  });
+  if (reduced || !items.length) return;
+
+  // the subtitle line under the title glows too when the light crosses it (glow only, no folding)
+  var sub = document.querySelector('.menu-header .sub');
+  var glowers = sub ? items.concat([sub]) : items.slice();
+
+  /* --- the light: a wide bright wedge centred on 0deg (straight up); JS rotates it --- */
+  var HALF = 15;                      // half-width of the wedge in degrees (what counts as "in the light")
+  function wedge(side) {               // one half of the wedge, from the bright centre line outwards
+    var s = side;                      // +1 draws 0..HALF, -1 draws 360-HALF..360
+    var stops = [
+      [0,   'rgba(255,252,235,0.42)'],
+      [2,   'rgba(255,248,220,0.36)'],
+      [5,   'rgba(232,176,75,0.30)'],
+      [8,   'rgba(232,200,120,0.20)'],
+      [11,  'rgba(111,227,212,0.12)'],
+      [HALF,'rgba(111,227,212,0.05)'],
+      [HALF+6,'transparent']
+    ];
+    var css = stops.map(function (p) {
+      var deg = s > 0 ? p[0] : (360 - p[0]);
+      return p[1] + ' ' + deg + 'deg';
+    });
+    if (s < 0) css.reverse();
+    return 'conic-gradient(from 0deg at 50% 50%,' +
+      (s > 0 ? css.join(',') + ', transparent 360deg' : 'transparent 0deg, ' + css.join(',')) + ')';
+  }
+  inner.style.background = wedge(+1);
+  var mirror = inner.cloneNode(false); mirror.id = '';
+  mirror.style.background = wedge(-1);
+  beam.appendChild(mirror);
+  var layers = [inner, mirror];
+
+  /* --- geometry --- */
+  var lamp = { x: 0, y: 0 };
+  function measureLamp() {
+    var r = lampEl.getBoundingClientRect();
+    lamp.x = r.left + r.width / 2; lamp.y = r.top + r.height / 2;
+  }
+  function angleTo(x, y) { return Math.atan2(y - lamp.y, x - lamp.x) * 180 / Math.PI + 90; } // CSS: 0 = up, clockwise
+  function itemPoint(el) {          // where the light has to touch to count: the name line, a third of the way in
+    var r = el.getBoundingClientRect();
+    return { x: r.left + Math.min(r.width * 0.35, 180), y: r.top + Math.min(r.height * 0.5, 34), top: r.top, bottom: r.bottom };
+  }
+
+  /* --- the sweep: a pendulum between the top and bottom of what's on screen --- */
+  var period = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sweep')) * 2 || 18; // there and back
+  var phase = 0, last = performance.now();
+  var LINGER = 900;                  // ms the glow lingers after the light has passed
+  var lastLit = new Array(glowers.length).fill(-1e9);
+
+  function frame(now) {
+    phase = (now / 1000) * 2 * Math.PI / period;   // from the clock, so dropped frames never slow the light
+    measureLamp();
+
+    // find the angular span of the items currently on screen (with a little overshoot past each end)
+    var lo = Infinity, hi = -Infinity, pts = [];
+    glowers.forEach(function (it, i) {
+      var p = itemPoint(it); pts[i] = p;
+      if (p.bottom < 0 || p.top > innerHeight) return;
+      var a = angleTo(p.x, p.y); lo = Math.min(lo, a); hi = Math.max(hi, a);
+    });
+    if (lo === Infinity) { lo = angleTo(innerWidth * 0.5, 80); hi = angleTo(innerWidth * 0.5, innerHeight - 40); }
+    lo -= HALF * 0.9; hi += HALF * 0.9;
+
+    // constant-speed sweep there and back, with only a short soft turnaround at each end (no dwelling)
+    var u = (phase / (2 * Math.PI)) % 1; if (u < 0) u += 1;
+    var tri = u < 0.5 ? u * 2 : 2 - u * 2;                  // 0→1→0 linear
+    var e = 0.08;                                            // width of the soft turn
+    if (tri < e) tri = e * Math.pow(tri / e, 2) ;            // ease into the turn
+    else if (tri > 1 - e) tri = 1 - e * Math.pow((1 - tri) / e, 2);
+    var heading = lo + (hi - lo) * tri;
+    layers.forEach(function (L) {
+      L.style.transform = 'translate(' + lamp.x + 'px,' + lamp.y + 'px) rotate(' + heading + 'deg)';
+    });
+
+    // light what the wedge is touching; let it linger a moment after the light moves on
+    glowers.forEach(function (it, i) {
+      var p = pts[i];
+      // the item counts as lit if any of its name-to-description block sits inside the wedge
+      var aTop = angleTo(p.x, p.top + 8), aBot = angleTo(p.x, p.bottom - 8);
+      var inLight = (heading + HALF > aTop) && (heading - HALF < aBot) && p.bottom > 0 && p.top < innerHeight;
+      if (inLight) lastLit[i] = now;
+      var open = now - lastLit[i] < LINGER;
+      if (open !== it.classList.contains('lit')) it.classList.toggle('lit', open);
+    });
+    requestAnimationFrame(frame);
+  }
+
+  measureLamp();
+  requestAnimationFrame(frame);
+  setTimeout(function () { beam.classList.add('on'); }, 500);
+})();
+</script>
+</body>
+</html>

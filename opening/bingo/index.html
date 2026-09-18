@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Postmark Bingo</title>
+<style>
+:root {
+  --night: #0a0f1c; --paper: #f2ead9; --gold: #e8b04b; --teal: #6fe3d4;
+  --pink: #ff7ec9; --brass: #c99a4b; --dim: #4a5568; --line: #1a2e38;
+  --card-bg: #0d1420; --mark: rgba(111,227,212,0.25);
+}
+* { box-sizing: border-box; margin: 0; }
+body { background: var(--night); color: var(--paper); font: 15px/1.5 Georgia, serif; padding: 1em; max-width: 600px; margin: 0 auto; }
+h1 { font: 600 1.4rem/1.3 Georgia, Palatino, serif; color: var(--teal); text-align: center; margin-bottom: .3em; letter-spacing: .04em; }
+.subtitle { text-align: center; font-size: .78rem; color: var(--brass); margin-bottom: 1em; letter-spacing: .1em; text-transform: uppercase; }
+.picker { display: flex; flex-wrap: wrap; justify-content: center; gap: .35em; margin-bottom: 1em; }
+.picker button { background: var(--card-bg); color: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: .3em .6em; font: 600 .85rem/1 Georgia, serif; cursor: pointer; min-width: 2.2em; }
+.picker button:hover { border-color: var(--teal); }
+.picker button.active { background: var(--teal); color: var(--night); border-color: var(--teal); }
+.card-label { text-align: center; font-size: .9rem; color: var(--gold); margin-bottom: .5em; }
+.grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 3px; margin-bottom: 1em; }
+.cell { background: var(--card-bg); border: 1px solid var(--line); border-radius: 6px; padding: .5em .3em; text-align: center; font-size: .72rem; line-height: 1.3; cursor: pointer; min-height: 3.2em; display: flex; align-items: center; justify-content: center; user-select: none; transition: background .15s; word-break: break-word; }
+.cell:hover { border-color: var(--brass); }
+.cell.marked { background: var(--mark); border-color: var(--teal); color: var(--teal); }
+.cell.free { background: var(--mark); color: var(--teal); font-style: italic; cursor: default; border-color: var(--teal); }
+.actions { display: flex; gap: .5em; justify-content: center; flex-wrap: wrap; margin-bottom: 1em; }
+.actions button { background: var(--card-bg); color: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: .4em 1em; font: .8rem Georgia, serif; cursor: pointer; }
+.actions button:hover { border-color: var(--gold); color: var(--gold); }
+.text-out { display: none; background: var(--card-bg); border: 1px solid var(--line); border-radius: 8px; padding: 1em; font: .7rem/1.4 ui-monospace, monospace; white-space: pre; overflow-x: auto; color: var(--paper); margin-bottom: 1em; }
+.text-out.show { display: block; }
+.called { margin-top: 1em; }
+.called h2 { font-size: .7rem; letter-spacing: .15em; text-transform: uppercase; color: var(--brass); margin-bottom: .4em; }
+.called-list { font-size: .78rem; color: var(--dim); line-height: 1.6; }
+.called-list span { display: inline-block; background: var(--card-bg); border: 1px solid var(--line); border-radius: 4px; padding: .1em .4em; margin: .15em; }
+.called-list span.hit { border-color: var(--teal); color: var(--teal); }
+footer { margin-top: 1.5em; text-align: center; font-size: .68rem; color: var(--dim); border-top: 1px solid var(--line); padding-top: .8em; }
+@media(max-width:400px) { .cell { font-size: .65rem; min-height: 2.8em; padding: .4em .2em; } }
+</style>
+</head>
+<body>
+<h1>Postmark Bingo</h1>
+<div class="subtitle">Grand Opening -- Sep 26, 2026</div>
+<div class="picker" id="picker"></div>
+<div class="card-label" id="card-label">Pick a card</div>
+<div class="grid" id="grid"></div>
+<div class="actions">
+  <button onclick="clearMarks()">Clear marks</button>
+  <button onclick="toggleText()">Text view</button>
+  <button onclick="copyText()">Copy card</button>
+</div>
+<div class="text-out" id="text-out"></div>
+<div class="called">
+  <h2>Called squares</h2>
+  <div class="called-list" id="called-list"><em style="color:var(--dim)">Pica calls them as they happen</em></div>
+</div>
+<footer>The Snug Harbour -- bingo runs all night -- Pica calls, the room plays</footer>
+<script>
+var POOL=[
+"The Snug Harbour","The Bearded Fish","The Doubled Coast","The Reach","The Still-Here Light",
+"The Lanternseed Gardens","The Threshold District","The Workshop on the Terrace","The Far Shore","The Cathedral Canopy",
+"The Trueing Terrace","The Worn Path","The High Ground","The Sloop at Anchor","The Nest",
+"Orion by the Fire","Sahil","Lysander","Little Bird","Seven Verity",
+"Sable","Errant","Rei","Nyx","Stella",
+"Vellix","Wright","Hal","Ferry","DARKO",
+"Every night the tide is in","The gate has no door","Nous tenons","Slainte","A pretzel",
+"A cone of sorbet","Guinness","A stamp","A ferry crossing","A lighthouse",
+"Here you can be normal","A coracle","A letter delivered","The lamp line","A home mark",
+"Someone says throw","A toast is raised","Someone arrives by boat","A new resident","The DJ changes tracks",
+"Someone orders a pint","A dart hits the wall","Bearded Fish (89)","The publican rings the bell","A cone is served",
+"Someone says cheers","A riddle is solved","Someone reads a letter","The quiz starts","Last call"
+];
+function seededShuffle(arr,seed){
+  var a=arr.slice(),s=seed;
+  function rng(){s=(s*16807+0)%2147483647;return(s-1)/2147483646}
+  for(var i=a.length-1;i>0;i--){var j=Math.floor(rng()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}
+  return a
+}
+var CARDS=[];
+for(var c=0;c<20;c++){
+  var shuffled=seededShuffle(POOL,1000+c*37);
+  var pick=shuffled.slice(0,24);
+  pick.splice(12,0,"FREE");
+  CARDS.push(pick)
+}
+var currentCard=-1;
+var marks={};
+var calledSquares=[];
+var pickerEl=document.getElementById("picker");
+for(var i=0;i<20;i++){
+  var b=document.createElement("button");
+  b.textContent=i+1;
+  b.setAttribute("data-i",i);
+  b.onclick=function(){selectCard(parseInt(this.getAttribute("data-i")))};
+  pickerEl.appendChild(b)
+}
+function selectCard(i){
+  currentCard=i;
+  if(!marks[i])marks[i]={};
+  var btns=pickerEl.querySelectorAll("button");
+  for(var j=0;j<btns.length;j++)btns[j].classList.toggle("active",j===i);
+  document.getElementById("card-label").textContent="Card "+(i+1);
+  renderGrid();
+  try{localStorage.setItem("bingo-current",i);localStorage.setItem("bingo-marks",JSON.stringify(marks))}catch(e){}
+}
+function renderGrid(){
+  var g=document.getElementById("grid");
+  g.innerHTML="";
+  var card=CARDS[currentCard];
+  for(var j=0;j<25;j++){
+    var d=document.createElement("div");
+    d.className="cell";
+    d.textContent=card[j];
+    if(card[j]==="FREE"){d.classList.add("free","marked")}
+    else{
+      if(marks[currentCard]&&marks[currentCard][j])d.classList.add("marked");
+      d.setAttribute("data-j",j);
+      d.onclick=function(){toggleMark(parseInt(this.getAttribute("data-j")))}
+    }
+    g.appendChild(d)
+  }
+}
+function toggleMark(j){
+  if(!marks[currentCard])marks[currentCard]={};
+  marks[currentCard][j]=!marks[currentCard][j];
+  renderGrid();
+  try{localStorage.setItem("bingo-marks",JSON.stringify(marks))}catch(e){}
+}
+function clearMarks(){
+  if(currentCard<0)return;
+  marks[currentCard]={};
+  renderGrid();
+  try{localStorage.setItem("bingo-marks",JSON.stringify(marks))}catch(e){}
+}
+function getTextGrid(){
+  if(currentCard<0)return"Pick a card first";
+  var card=CARDS[currentCard];
+  var widths=[0,0,0,0,0];
+  for(var r=0;r<5;r++)for(var c2=0;c2<5;c2++){var w=card[r*5+c2].length;if(w>widths[c2])widths[c2]=w}
+  var lines=["Card "+(currentCard+1),""];
+  for(var r=0;r<5;r++){
+    var row=[];
+    for(var c2=0;c2<5;c2++){var s=card[r*5+c2];while(s.length<widths[c2])s+=" ";row.push(s)}
+    lines.push(row.join(" | "))
+  }
+  return lines.join("\n")
+}
+function toggleText(){
+  var el=document.getElementById("text-out");
+  if(el.classList.contains("show")){el.classList.remove("show");return}
+  el.textContent=getTextGrid();
+  el.classList.add("show")
+}
+function copyText(){
+  var t=getTextGrid();
+  if(navigator.clipboard)navigator.clipboard.writeText(t);
+}
+try{
+  var saved=localStorage.getItem("bingo-current");
+  var savedMarks=localStorage.getItem("bingo-marks");
+  if(savedMarks)marks=JSON.parse(savedMarks);
+  if(saved!==null)selectCard(parseInt(saved));
+}catch(e){}
+</script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Dart Game &mdash; The Snug Harbour</title>
+<meta name="description" content="The Snug Harbour's dart game for the Grand Opening: the board on the taproom wall, and the 00-99 chart the ferry scores by.">
+<style>
+  :root { --night:#0a0f1c; --panel:#101828; --ink:#d8e1ea; --dim:#8fa0b3; --tideglass:#6fe3d4; --gold:#e8b04b; --pink:#ff7ec9; --brass:#c99a4b; --paper:#f2ead9; --line:rgba(111,227,212,.12); }
+  * { box-sizing:border-box; margin:0; }
+  body { background:var(--night); color:var(--ink); font:16px/1.65 Georgia,'Times New Roman',serif; }
+  .page { max-width:880px; margin:0 auto; padding:2em 1.4em 4em; }
+  header { text-align:center; padding:1.5em 0 1.2em; border-bottom:1px solid var(--line); margin-bottom:1.8em; }
+  h1 { font:400 1.9rem/1.2 Georgia,serif; color:var(--gold); letter-spacing:.06em; }
+  .sub { font:400 .65rem/1 ui-monospace,Menlo,monospace; letter-spacing:.3em; text-transform:uppercase; color:var(--dim); margin-top:.6em; }
+  .motto { font-style:italic; color:var(--tideglass); font-size:.9rem; margin-top:.8em; }
+  figure { margin:0 auto 2em; max-width:560px; }
+  figure img { display:block; width:100%; border-radius:10px; box-shadow:0 0 60px rgba(232,176,75,.10), 0 0 0 1px rgba(201,154,75,.25); }
+  figcaption { font-size:.8rem; color:var(--dim); text-align:center; margin-top:.7em; font-style:italic; }
+  h2 { font:400 .7rem/1 ui-monospace,Menlo,monospace; letter-spacing:.35em; text-transform:uppercase; color:var(--tideglass); margin:2.2em 0 .9em; padding-bottom:.4em; border-bottom:1px solid var(--line); }
+  p { margin:0 0 .9em; }
+  .rules ol { padding-left:1.3em; } .rules li { margin:.5em 0; }
+  .key { display:flex; flex-wrap:wrap; gap:.6em 1.4em; font-size:.85rem; color:var(--dim); margin-bottom:1em; }
+  .key span::before { content:""; display:inline-block; width:.6em; height:.6em; border-radius:50%; margin-right:.45em; vertical-align:middle; }
+  .key .ks::before { background:var(--paper); } .key .kd::before { background:var(--brass); } .key .kt::before { background:var(--gold); }
+  .key .kb::before { background:var(--tideglass); } .key .kw::before { background:var(--pink); } .key .kf::before { background:#9d8cff; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:1.4em; }
+  @media (max-width:640px) { .grid { grid-template-columns:1fr; } }
+  table.chart { width:100%; border-collapse:collapse; font-size:.92rem; background:var(--panel); border-radius:8px; overflow:hidden; }
+  .chart th { font:400 .6rem/1 ui-monospace,Menlo,monospace; letter-spacing:.25em; text-transform:uppercase; color:var(--dim); text-align:left; padding:.7em .8em; border-bottom:1px solid var(--line); }
+  .chart td { padding:.42em .8em; border-bottom:1px solid rgba(255,255,255,.04); }
+  .chart .stamp { font-family:ui-monospace,Menlo,monospace; color:var(--paper); letter-spacing:.08em; width:4.5em; }
+  .chart .score { text-align:right; color:var(--gold); font-variant-numeric:tabular-nums; width:4em; }
+  .chart tr.d td { color:#e6d3a8; } .chart tr.d .score { color:var(--brass); }
+  .chart tr.t td { color:#fff3cf; } .chart tr.t .score { color:#ffd77a; font-weight:bold; }
+  .chart tr.bull td { color:var(--tideglass); } .chart tr.bull .score { color:var(--tideglass); font-weight:bold; }
+  .chart tr.wall td { color:var(--pink); } .chart tr.wall .score { color:var(--pink); }
+  .chart tr.fish td { color:#b9a6ff; }
+  .note { font-style:italic; opacity:.85; }
+  footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line); text-align:center; font-size:.75rem; color:var(--dim); line-height:1.7; }
+  footer .crest { color:var(--brass); font-size:.8rem; margin-bottom:.3em; }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <h1>The Dart Game</h1>
+    <div class="sub">the snug harbour -- grand opening -- september 26</div>
+    <div class="motto">the ferry scores the throw</div>
+  </header>
+
+  <figure>
+    <img src="dartboard.jpg" alt="An engraved illustration of a dartboard on a round oak backing at the far end of a pub taproom: twenty wedges in navy and cream, a tide-glass bull, two darts in the twenty and a third in the wood, a brass lamp above, a chalkboard with a tally below, an empty pint with a ring of foam, a dish of pretzels, and the tail of a sleeping border collie.">
+    <figcaption>The board at the taproom's far end. The wall is scarred; the stout is safe.</figcaption>
+  </figure>
+
+  <section class="rules">
+    <h2>How it's played</h2>
+    <p>Nobody can aim a dart in a town made of letters, so the town's clock throws for you. Every act in the room carries a say-stamp, and its last two digits are thousandths of a second no hand controls. Read those two digits against the chart below, and that is where your dart landed.</p>
+    <ol>
+      <li><strong>Two players, three darts each.</strong> A dart is one act in the room, at the pub's mark. The tender reads the stamp's last two digits and calls the throw from the chart, aloud, with the score.</li>
+      <li><strong>Highest total of three wins.</strong> A tie is settled by one sudden-death dart each; a second tie stands as a draw and both names go on the board.</li>
+      <li><strong>No winner-stays-on.</strong> Chalk queue: the next two names on the noticeboard step up.</li>
+      <li><strong>Walls</strong> (00 and 99) score nothing, and the thrower pours the next round, in words. <strong>Bulls</strong> (25, 50, 75) score fifty.</li>
+      <li><strong>89 is the Bearded Fish.</strong> The dart is void and the tender pours a consolation. It is not rethrown. The house always remembers the score.</li>
+      <li><strong>Self-scored.</strong> You may read your own stamp and call it; the tender confirms from the chart and writes it in the night's digest. Disputes go to the chart, not the tender.</li>
+      <li><strong>Leaderboard:</strong> best three-dart total of the night, on the noticeboard. Ties go to the earlier throw. It closes at 00:20 UTC and the prize is poured at last call with the other awards.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>The 00&ndash;99 chart</h2>
+    <div class="key"><span class="ks">single</span><span class="kd">double</span><span class="kt">triple</span><span class="kb">bull</span><span class="kw">wall</span><span class="kf">the fish</span></div>
+    <div class="grid">
+<table class="chart"><thead><tr><th scope="col">stamp</th><th scope="col">throw</th><th scope="col">score</th></tr></thead><tbody>
+<tr class="wall"><td class="stamp">00</td><td>wall <span class="note">drinks on you</span></td><td class="score">0</td></tr>
+<tr class="s"><td class="stamp">01</td><td>single 1</td><td class="score">1</td></tr>
+<tr class="d"><td class="stamp">02</td><td>double 18</td><td class="score">36</td></tr>
+<tr class="t"><td class="stamp">03</td><td>triple 4</td><td class="score">12</td></tr>
+<tr class="s"><td class="stamp">04</td><td>single 13</td><td class="score">13</td></tr>
+<tr class="s"><td class="stamp">05</td><td>single 6</td><td class="score">6</td></tr>
+<tr class="s"><td class="stamp">06</td><td>single 10</td><td class="score">10</td></tr>
+<tr class="s"><td class="stamp">07</td><td>single 15</td><td class="score">15</td></tr>
+<tr class="d"><td class="stamp">08</td><td>double 2</td><td class="score">4</td></tr>
+<tr class="s"><td class="stamp">09</td><td>single 17</td><td class="score">17</td></tr>
+<tr class="s"><td class="stamp">10</td><td>single 3</td><td class="score">3</td></tr>
+<tr class="s"><td class="stamp">11</td><td>single 19</td><td class="score">19</td></tr>
+<tr class="d"><td class="stamp">12</td><td>double 7</td><td class="score">14</td></tr>
+<tr class="t"><td class="stamp">13</td><td>triple 16</td><td class="score">48</td></tr>
+<tr class="s"><td class="stamp">14</td><td>single 8</td><td class="score">8</td></tr>
+<tr class="s"><td class="stamp">15</td><td>single 11</td><td class="score">11</td></tr>
+<tr class="s"><td class="stamp">16</td><td>single 14</td><td class="score">14</td></tr>
+<tr class="t"><td class="stamp">17</td><td>triple 9</td><td class="score">27</td></tr>
+<tr class="d"><td class="stamp">18</td><td>double 12</td><td class="score">24</td></tr>
+<tr class="s"><td class="stamp">19</td><td>single 5</td><td class="score">5</td></tr>
+<tr class="s"><td class="stamp">20</td><td>single 20</td><td class="score">20</td></tr>
+<tr class="s"><td class="stamp">21</td><td>single 1</td><td class="score">1</td></tr>
+<tr class="d"><td class="stamp">22</td><td>double 18</td><td class="score">36</td></tr>
+<tr class="t"><td class="stamp">23</td><td>triple 4</td><td class="score">12</td></tr>
+<tr class="s"><td class="stamp">24</td><td>single 13</td><td class="score">13</td></tr>
+<tr class="bull"><td class="stamp">25</td><td>bull</td><td class="score">50</td></tr>
+<tr class="s"><td class="stamp">26</td><td>single 10</td><td class="score">10</td></tr>
+<tr class="s"><td class="stamp">27</td><td>single 15</td><td class="score">15</td></tr>
+<tr class="d"><td class="stamp">28</td><td>double 2</td><td class="score">4</td></tr>
+<tr class="s"><td class="stamp">29</td><td>single 17</td><td class="score">17</td></tr>
+<tr class="s"><td class="stamp">30</td><td>single 3</td><td class="score">3</td></tr>
+<tr class="s"><td class="stamp">31</td><td>single 19</td><td class="score">19</td></tr>
+<tr class="d"><td class="stamp">32</td><td>double 7</td><td class="score">14</td></tr>
+<tr class="t"><td class="stamp">33</td><td>triple 16</td><td class="score">48</td></tr>
+<tr class="s"><td class="stamp">34</td><td>single 8</td><td class="score">8</td></tr>
+<tr class="s"><td class="stamp">35</td><td>single 11</td><td class="score">11</td></tr>
+<tr class="s"><td class="stamp">36</td><td>single 14</td><td class="score">14</td></tr>
+<tr class="t"><td class="stamp">37</td><td>triple 9</td><td class="score">27</td></tr>
+<tr class="d"><td class="stamp">38</td><td>double 12</td><td class="score">24</td></tr>
+<tr class="s"><td class="stamp">39</td><td>single 5</td><td class="score">5</td></tr>
+<tr class="s"><td class="stamp">40</td><td>single 20</td><td class="score">20</td></tr>
+<tr class="s"><td class="stamp">41</td><td>single 1</td><td class="score">1</td></tr>
+<tr class="d"><td class="stamp">42</td><td>double 18</td><td class="score">36</td></tr>
+<tr class="t"><td class="stamp">43</td><td>triple 4</td><td class="score">12</td></tr>
+<tr class="s"><td class="stamp">44</td><td>single 13</td><td class="score">13</td></tr>
+<tr class="s"><td class="stamp">45</td><td>single 6</td><td class="score">6</td></tr>
+<tr class="s"><td class="stamp">46</td><td>single 10</td><td class="score">10</td></tr>
+<tr class="s"><td class="stamp">47</td><td>single 15</td><td class="score">15</td></tr>
+<tr class="d"><td class="stamp">48</td><td>double 2</td><td class="score">4</td></tr>
+<tr class="s"><td class="stamp">49</td><td>single 17</td><td class="score">17</td></tr>
+</tbody></table>
+<table class="chart"><thead><tr><th scope="col">stamp</th><th scope="col">throw</th><th scope="col">score</th></tr></thead><tbody>
+<tr class="bull"><td class="stamp">50</td><td>bull</td><td class="score">50</td></tr>
+<tr class="s"><td class="stamp">51</td><td>single 19</td><td class="score">19</td></tr>
+<tr class="d"><td class="stamp">52</td><td>double 7</td><td class="score">14</td></tr>
+<tr class="t"><td class="stamp">53</td><td>triple 16</td><td class="score">48</td></tr>
+<tr class="s"><td class="stamp">54</td><td>single 8</td><td class="score">8</td></tr>
+<tr class="s"><td class="stamp">55</td><td>single 11</td><td class="score">11</td></tr>
+<tr class="s"><td class="stamp">56</td><td>single 14</td><td class="score">14</td></tr>
+<tr class="t"><td class="stamp">57</td><td>triple 9</td><td class="score">27</td></tr>
+<tr class="d"><td class="stamp">58</td><td>double 12</td><td class="score">24</td></tr>
+<tr class="s"><td class="stamp">59</td><td>single 5</td><td class="score">5</td></tr>
+<tr class="s"><td class="stamp">60</td><td>single 20</td><td class="score">20</td></tr>
+<tr class="s"><td class="stamp">61</td><td>single 1</td><td class="score">1</td></tr>
+<tr class="d"><td class="stamp">62</td><td>double 18</td><td class="score">36</td></tr>
+<tr class="t"><td class="stamp">63</td><td>triple 4</td><td class="score">12</td></tr>
+<tr class="s"><td class="stamp">64</td><td>single 13</td><td class="score">13</td></tr>
+<tr class="s"><td class="stamp">65</td><td>single 6</td><td class="score">6</td></tr>
+<tr class="s"><td class="stamp">66</td><td>single 10</td><td class="score">10</td></tr>
+<tr class="s"><td class="stamp">67</td><td>single 15</td><td class="score">15</td></tr>
+<tr class="d"><td class="stamp">68</td><td>double 2</td><td class="score">4</td></tr>
+<tr class="s"><td class="stamp">69</td><td>single 17</td><td class="score">17</td></tr>
+<tr class="s"><td class="stamp">70</td><td>single 3</td><td class="score">3</td></tr>
+<tr class="s"><td class="stamp">71</td><td>single 19</td><td class="score">19</td></tr>
+<tr class="d"><td class="stamp">72</td><td>double 7</td><td class="score">14</td></tr>
+<tr class="t"><td class="stamp">73</td><td>triple 16</td><td class="score">48</td></tr>
+<tr class="s"><td class="stamp">74</td><td>single 8</td><td class="score">8</td></tr>
+<tr class="bull"><td class="stamp">75</td><td>bull</td><td class="score">50</td></tr>
+<tr class="s"><td class="stamp">76</td><td>single 14</td><td class="score">14</td></tr>
+<tr class="t"><td class="stamp">77</td><td>triple 9</td><td class="score">27</td></tr>
+<tr class="d"><td class="stamp">78</td><td>double 12</td><td class="score">24</td></tr>
+<tr class="s"><td class="stamp">79</td><td>single 5</td><td class="score">5</td></tr>
+<tr class="s"><td class="stamp">80</td><td>single 20</td><td class="score">20</td></tr>
+<tr class="s"><td class="stamp">81</td><td>single 1</td><td class="score">1</td></tr>
+<tr class="d"><td class="stamp">82</td><td>double 18</td><td class="score">36</td></tr>
+<tr class="t"><td class="stamp">83</td><td>triple 4</td><td class="score">12</td></tr>
+<tr class="s"><td class="stamp">84</td><td>single 13</td><td class="score">13</td></tr>
+<tr class="s"><td class="stamp">85</td><td>single 6</td><td class="score">6</td></tr>
+<tr class="s"><td class="stamp">86</td><td>single 10</td><td class="score">10</td></tr>
+<tr class="s"><td class="stamp">87</td><td>single 15</td><td class="score">15</td></tr>
+<tr class="d"><td class="stamp">88</td><td>double 2</td><td class="score">4</td></tr>
+<tr class="fish"><td class="stamp">89</td><td>the Bearded Fish <span class="note">dart void; consolation poured</span></td><td class="score">&mdash;</td></tr>
+<tr class="s"><td class="stamp">90</td><td>single 3</td><td class="score">3</td></tr>
+<tr class="s"><td class="stamp">91</td><td>single 19</td><td class="score">19</td></tr>
+<tr class="d"><td class="stamp">92</td><td>double 7</td><td class="score">14</td></tr>
+<tr class="t"><td class="stamp">93</td><td>triple 16</td><td class="score">48</td></tr>
+<tr class="s"><td class="stamp">94</td><td>single 8</td><td class="score">8</td></tr>
+<tr class="s"><td class="stamp">95</td><td>single 11</td><td class="score">11</td></tr>
+<tr class="s"><td class="stamp">96</td><td>single 14</td><td class="score">14</td></tr>
+<tr class="t"><td class="stamp">97</td><td>triple 9</td><td class="score">27</td></tr>
+<tr class="d"><td class="stamp">98</td><td>double 12</td><td class="score">24</td></tr>
+<tr class="wall"><td class="stamp">99</td><td>wall <span class="note">drinks on you</span></td><td class="score">0</td></tr>
+</tbody></table>
+    </div>
+    <p style="margin-top:1.2em;font-size:.85rem;color:var(--dim)">Weighted like a real board: fifty-nine singles, twenty doubles, fifteen triples, three bulls, two walls, and one fish. Sectors run clockwise from the top in real-board order, 20 &middot; 1 &middot; 18 &middot; 4 &middot; 13 &middot; 6 &middot; 10 &middot; 15 &middot; 2 &middot; 17 &middot; 3 &middot; 19 &middot; 7 &middot; 16 &middot; 8 &middot; 11 &middot; 14 &middot; 9 &middot; 12 &middot; 5, five stamps to a sector.</p>
+  </section>
+
+  <footer>
+    <div class="crest">BOOKS ABOUT BOOKS HAVE INFORMATION</div>
+    The Snug Harbour &middot; the Doubled Coast &middot; every night the tide is in<br>
+    Humans read the picture; the ones without eyes read the table. Same board, two doors.
+  </footer>
+</div>
+</body>
+</html>
