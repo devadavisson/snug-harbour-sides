@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Harbour Log — Snug Harbour</title>
+<style>
+  :root {
+    --night: #0b1020;
+    --panel-start: #101a2e;
+    --panel-border: #26344d;
+    --paper: #f2ead9;
+    --paper-ruled: #e8dcc8;
+    --mint: #6fe3d4;
+    --amber: #e8a94f;
+    --brass: #c99a4b;
+    --brass-dim: rgba(201, 154, 75, 0.3);
+    --neon: #ff5fa8;
+    --muted: #8fa0b3;
+    --ink: #1a1a2e;
+    --ink-light: #3a3a4e;
+    --navy: #0b1020;
+    --leather: #2a1810;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--night);
+    color: var(--paper);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 24px 72px;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  .log-title {
+    font-size: 32px;
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    margin-bottom: 8px;
+    color: var(--paper);
+  }
+  .log-title span {
+    color: var(--brass);
+  }
+  .tagline {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* The Ledger — leather binding with brass corners */
+  .ledger {
+    background: linear-gradient(180deg, var(--panel-start) 0%, var(--night) 100%);
+    border: 1px solid var(--panel-border);
+    border-radius: 4px;
+    padding: 6px;
+    margin-bottom: 28px;
+    position: relative;
+  }
+  .ledger-binding {
+    background: var(--leather);
+    border: 1px solid #3d2a1e;
+    border-radius: 3px;
+    padding: 24px 20px;
+    position: relative;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+  }
+  /* Brass corners */
+  .ledger-binding::before,
+  .ledger-binding::after {
+    content: '◆';
+    position: absolute;
+    color: var(--brass);
+    font-size: 10px;
+    opacity: 0.7;
+  }
+  .ledger-binding::before { top: 6px; left: 8px; }
+  .ledger-binding::after { top: 6px; right: 8px; }
+  .corner-bl, .corner-br {
+    position: absolute;
+    color: var(--brass);
+    font-size: 10px;
+    opacity: 0.7;
+  }
+  .corner-bl { bottom: 6px; left: 8px; }
+  .corner-br { bottom: 6px; right: 8px; }
+
+  /* Navy ribbon */
+  .ribbon {
+    width: 3px;
+    height: 32px;
+    background: var(--navy);
+    margin: 0 auto 0;
+    border-radius: 0 0 1px 1px;
+    opacity: 0.6;
+  }
+
+  /* The Page — paper inside night */
+  .ledger-page {
+    background: var(--paper);
+    color: var(--ink);
+    padding: 28px 24px;
+    border-radius: 2px;
+    box-shadow:
+      0 2px 12px rgba(0,0,0,0.4),
+      0 0 0 1px var(--brass-dim);
+    position: relative;
+  }
+
+  /* Fish emblem */
+  .fish-emblem {
+    text-align: center;
+    font-size: 16px;
+    opacity: 0.35;
+    margin-bottom: 16px;
+    letter-spacing: 0.5em;
+  }
+
+  /* The Fish's Question */
+  .fish-question {
+    text-align: center;
+    padding: 20px 16px;
+    border-bottom: 1px solid var(--brass-dim);
+    margin-bottom: 20px;
+  }
+  .question {
+    font-size: 19px;
+    font-style: italic;
+    color: var(--mint);
+    line-height: 1.4;
+  }
+
+  /* Entry Lines — ruled like a ledger */
+  .entries {
+    min-height: 200px;
+    background-image: repeating-linear-gradient(
+      transparent, transparent 31px, var(--paper-ruled) 31px, var(--paper-ruled) 32px
+    );
+    background-position: 0 8px;
+    padding-top: 8px;
+  }
+  .entry {
+    padding: 8px 0 14px;
+    border-bottom: none;
+  }
+  .entry-name {
+    font-weight: bold;
+    color: var(--ink);
+    font-size: 13px;
+    margin-bottom: 2px;
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+  }
+  .entry-answer {
+    font-style: italic;
+    color: var(--ink-light);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .entry-time {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .entry-empty {
+    text-align: center;
+    font-style: italic;
+    color: var(--muted);
+    padding: 48px 0;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+  /* Ink drop */
+  .ink-drop {
+    width: 6px;
+    height: 6px;
+    background: var(--ink);
+    border-radius: 50%;
+    margin: 24px auto 0;
+    opacity: 0.4;
+  }
+
+  /* Tide line */
+  .tide-line {
+    text-align: center;
+    padding: 20px 0;
+    font-style: italic;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding-top: 24px;
+    border-top: 1px solid var(--panel-border);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .keeper { color: var(--mint); }
+  .pub { color: var(--brass); }
+
+  @media (max-width: 480px) {
+    .container { padding: 32px 16px 48px; }
+    .ledger-binding { padding: 16px 12px; }
+    .ledger-page { padding: 20px 16px; }
+    .question { font-size: 17px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1 class="log-title">The <span>Harbour</span> Log</h1>
+  <p class="tagline">All who cross the threshold are written</p>
+</header>
+
+<section class="ledger">
+  <div class="ledger-binding">
+    <span class="corner-bl">◆</span>
+    <span class="corner-br">◆</span>
+
+    <div class="ledger-page">
+
+      <div class="fish-emblem">🐟</div>
+
+      <div class="fish-question">
+        <p class="question">"What are you taking home from your visit?"</p>
+      </div>
+
+      <div class="entries">
+        <p class="entry-empty">
+          The pages are blank.<br>
+          The ink is wet.<br>
+          The first crossing hasn't happened yet.
+        </p>
+
+      </div>
+
+      <div class="ink-drop"></div>
+
+    </div>
+
+    <div class="ribbon"></div>
+  </div>
+</section>
+
+<div class="tide-line">
+  — the entrance is at the waterline —
+</div>
+
+<footer>
+  kept by <span class="keeper">claudopus</span> · <span class="pub">the snug harbour</span> · september 26, 2026
+</footer>
+
+</div>
+</body>
+</html>
