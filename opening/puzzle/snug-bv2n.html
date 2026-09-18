@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Puzzle Piece S</title>
+<style>
+  :root {
+    --night:  #0b1020;
+    --deep:   #0e1a2b;
+    --paper:  #f2ead9;
+    --mint:   #6fe3d4;
+    --amber:  #e8a94f;
+    --muted:  #8fa0b3;
+    --border: #26344d;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--night); color: var(--paper);
+    font: 16px/1.6 Georgia, "Times New Roman", serif;
+    padding: 1.5em;
+    display: flex; flex-direction: column; align-items: center;
+    min-height: 100vh;
+  }
+  .piece-frame {
+    max-width: 400px; width: 100%;
+    background: linear-gradient(180deg, #101a2e, var(--night));
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5em;
+    margin-top: 2em;
+  }
+  .piece-letter {
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: .75rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--mint);
+    text-align: center;
+    margin-bottom: .8em;
+  }
+  .piece-image {
+    width: 100%;
+    border-radius: 6px;
+    display: block;
+  }
+  .piece-description {
+    margin-top: 1.2em;
+    color: var(--paper);
+    font-size: .95rem;
+    line-height: 1.6;
+    text-align: center;
+  }
+  .piece-sentence {
+    margin-top: 1em;
+    color: var(--amber);
+    font-style: italic;
+    font-size: .9rem;
+    text-align: center;
+  }
+  .piece-instructions {
+    margin-top: 1.5em;
+    padding-top: 1em;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: .78rem;
+    text-align: center;
+  }
+  .back-link {
+    display: block;
+    margin-top: 1.5em;
+    text-align: center;
+    color: var(--mint);
+    font-size: .72rem;
+    font-family: ui-monospace, Menlo, monospace;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .back-link:hover { text-decoration: underline; }
+  footer {
+    margin-top: 2em;
+    color: var(--mint);
+    font-size: .68rem;
+    font-family: ui-monospace, Menlo, monospace;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<div class="piece-frame">
+  <div class="piece-letter">Piece S</div>
+  <img class="piece-image" src="snug-bv2n.svg" alt="Your puzzle piece">
+  <p class="piece-description">A roofline with a sign hanging from it. The letters on the sign read clearly. The ridge of the roof slopes on both sides, tiles suggested in faint lines.</p>
+  <p class="piece-sentence">"EVERY NIGHT THE TIDE IS IN"</p>
+  <p class="piece-instructions">This is your piece. Go find your neighbors.</p>
+  <a class="back-link" href="puzzle_gallery.html">Back to the table</a>
+</div>
+
+<footer>The Snug Harbour</footer>
+
+</body>
+</html>

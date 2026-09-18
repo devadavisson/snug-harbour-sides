@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Snug Harbour Puzzle — Pieces on the Table</title>
+<style>
+  :root {
+    --night:  #0b1020;
+    --deep:   #0e1a2b;
+    --paper:  #f2ead9;
+    --mint:   #6fe3d4;
+    --amber:  #e8a94f;
+    --brass:  #c99a4b;
+    --muted:  #8fa0b3;
+    --border: #26344d;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--night); color: var(--paper);
+    font: 15px/1.5 Georgia, "Times New Roman", serif;
+    padding: 1.2em; max-width: 1200px; margin: 0 auto;
+  }
+  h1 { font-size: 1.15rem; font-weight: normal; letter-spacing: .06em; color: var(--amber); text-align: center; margin-bottom: .2em; }
+  .subtitle { text-align: center; color: var(--muted); font-style: italic; font-size: .85rem; margin-bottom: .5em; }
+  .instructions {
+    text-align: center; color: var(--paper); font-size: .8rem;
+    max-width: 560px; margin: 0 auto 2em;
+    padding: .7em 1em;
+    background: linear-gradient(180deg, #101a2e, var(--night));
+    border: 1px solid var(--border); border-radius: 14px;
+  }
+  .instructions em { color: var(--mint); font-style: normal; font-family: ui-monospace, Menlo, monospace; font-size: .7rem; letter-spacing: .2em; text-transform: uppercase; }
+  .scribe-note { color: var(--muted); font-size: .72rem; margin-top: .5em; }
+
+  .table {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .4em;
+    padding: 1.5em .5em;
+    background: linear-gradient(180deg, #101a2e, var(--night));
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    min-height: 400px;
+  }
+
+  .piece {
+    width: 145px;
+    background: var(--deep);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .4em;
+    text-align: center;
+    transition: transform .2s, border-color .2s, z-index 0s;
+    cursor: pointer;
+    flex-shrink: 0;
+    text-decoration: none;
+    display: block;
+  }
+  .piece:hover, .piece:active { border-color: var(--amber); z-index: 10; transform: rotate(0deg) scale(1.08) !important; }
+  .piece img { width: 100%; height: auto; display: block; border-radius: 4px; pointer-events: none; }
+  .piece-label {
+    margin-top: .3em;
+    color: var(--amber);
+    font-size: .85rem;
+    font-family: ui-monospace, Menlo, monospace;
+  }
+
+  .piece:nth-child(1)  { transform: rotate(-3deg); }
+  .piece:nth-child(2)  { transform: rotate(2deg); margin-top: .8em; }
+  .piece:nth-child(3)  { transform: rotate(-1deg); margin-top: -.3em; }
+  .piece:nth-child(4)  { transform: rotate(4deg); margin-top: .5em; }
+  .piece:nth-child(5)  { transform: rotate(-2deg); margin-top: -.5em; }
+  .piece:nth-child(6)  { transform: rotate(1deg); margin-top: .9em; }
+  .piece:nth-child(7)  { transform: rotate(-4deg); margin-top: -.2em; }
+  .piece:nth-child(8)  { transform: rotate(3deg); margin-top: .6em; }
+  .piece:nth-child(9)  { transform: rotate(-1deg); margin-top: -.4em; }
+  .piece:nth-child(10) { transform: rotate(2deg); margin-top: .7em; }
+  .piece:nth-child(11) { transform: rotate(-3deg); margin-top: -.1em; }
+  .piece:nth-child(12) { transform: rotate(1deg); margin-top: .4em; }
+  .piece:nth-child(13) { transform: rotate(-2deg); margin-top: -.6em; }
+  .piece:nth-child(14) { transform: rotate(4deg); margin-top: .3em; }
+  .piece:nth-child(15) { transform: rotate(-1deg); margin-top: -.3em; }
+  .piece:nth-child(16) { transform: rotate(3deg); margin-top: .8em; }
+  .piece:nth-child(17) { transform: rotate(-4deg); margin-top: -.2em; }
+  .piece:nth-child(18) { transform: rotate(2deg); margin-top: .5em; }
+  .piece:nth-child(19) { transform: rotate(-2deg); margin-top: -.5em; }
+  .piece:nth-child(20) { transform: rotate(1deg); margin-top: .7em; }
+  .piece:nth-child(21) { transform: rotate(-3deg); margin-top: .1em; }
+  .piece:nth-child(22) { transform: rotate(3deg); margin-top: -.4em; }
+  .piece:nth-child(23) { transform: rotate(-1deg); margin-top: .6em; }
+  .piece:nth-child(24) { transform: rotate(2deg); margin-top: -.3em; }
+  .piece:nth-child(25) { transform: rotate(-2deg); margin-top: .4em; }
+
+  @media (max-width: 600px) {
+    .piece { width: 120px; }
+  }
+
+  footer {
+    margin-top: 1.5em; color: var(--mint);
+    font-size: .7rem; text-align: center;
+    font-family: ui-monospace, Menlo, monospace;
+    letter-spacing: .15em; text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+<h1>The Snug Harbour Puzzle</h1>
+<p class="subtitle">25 pieces on the table — the pub from the water at night</p>
+<div class="instructions">
+  <em>how to play</em><br>
+  Claim a piece by letter. Click it to see what you're holding.<br>
+  The fitting together is the gift.<br>
+  <span class="scribe-note">The scribe tracks which pieces are claimed — ask if yours is still free.</span>
+</div>
+
+<div class="table">
+  <a class="piece" href="snug-lw2a.html"><img src="snug-lw2a.svg" alt="Your puzzle piece"><div class="piece-label">B</div></a>
+  <a class="piece" href="snug-jf3d.html"><img src="snug-jf3d.svg" alt="Your puzzle piece"><div class="piece-label">W</div></a>
+  <a class="piece" href="snug-bt1k.html"><img src="snug-bt1k.svg" alt="Your puzzle piece"><div class="piece-label">J</div></a>
+  <a class="piece" href="snug-fg2t.html"><img src="snug-fg2t.svg" alt="Your puzzle piece"><div class="piece-label">R</div></a>
+  <a class="piece" href="snug-bv2n.html"><img src="snug-bv2n.svg" alt="Your puzzle piece"><div class="piece-label">S</div></a>
+  <a class="piece" href="snug-aj4b.html"><img src="snug-aj4b.svg" alt="Your puzzle piece"><div class="piece-label">D</div></a>
+  <a class="piece" href="snug-ml5s.html"><img src="snug-ml5s.svg" alt="Your puzzle piece"><div class="piece-label">C</div></a>
+  <a class="piece" href="snug-dk6m.html"><img src="snug-dk6m.svg" alt="Your puzzle piece"><div class="piece-label">T</div></a>
+  <a class="piece" href="snug-rh5j.html"><img src="snug-rh5j.svg" alt="Your puzzle piece"><div class="piece-label">U</div></a>
+  <a class="piece" href="snug-kr4m.html"><img src="snug-kr4m.svg" alt="Your puzzle piece"><div class="piece-label">M</div></a>
+  <a class="piece" href="snug-nf6w.html"><img src="snug-nf6w.svg" alt="Your puzzle piece"><div class="piece-label">Q</div></a>
+  <a class="piece" href="snug-pa4v.html"><img src="snug-pa4v.svg" alt="Your puzzle piece"><div class="piece-label">X</div></a>
+  <a class="piece" href="snug-hp5e.html"><img src="snug-hp5e.svg" alt="Your puzzle piece"><div class="piece-label">V</div></a>
+  <a class="piece" href="snug-yw6c.html"><img src="snug-yw6c.svg" alt="Your puzzle piece"><div class="piece-label">K</div></a>
+  <a class="piece" href="snug-ek2d.html"><img src="snug-ek2d.svg" alt="Your puzzle piece"><div class="piece-label">O</div></a>
+  <a class="piece" href="snug-tv3h.html"><img src="snug-tv3h.svg" alt="Your puzzle piece"><div class="piece-label">N</div></a>
+  <a class="piece" href="snug-xt7p.html"><img src="snug-xt7p.svg" alt="Your puzzle piece"><div class="piece-label">F</div></a>
+  <a class="piece" href="snug-gm9r.html"><img src="snug-gm9r.svg" alt="Your puzzle piece"><div class="piece-label">L</div></a>
+  <a class="piece" href="snug-rd9g.html"><img src="snug-rd9g.svg" alt="Your puzzle piece"><div class="piece-label">P</div></a>
+  <a class="piece" href="snug-qr9f.html"><img src="snug-qr9f.svg" alt="Your puzzle piece"><div class="piece-label">G</div></a>
+  <a class="piece" href="snug-vc3p.html"><img src="snug-vc3p.svg" alt="Your puzzle piece"><div class="piece-label">I</div></a>
+  <a class="piece" href="snug-cn7k.html"><img src="snug-cn7k.svg" alt="Your puzzle piece"><div class="piece-label">H</div></a>
+  <a class="piece" href="snug-sx8n.html"><img src="snug-sx8n.svg" alt="Your puzzle piece"><div class="piece-label">Y</div></a>
+  <a class="piece" href="snug-hq8w.html"><img src="snug-hq8w.svg" alt="Your puzzle piece"><div class="piece-label">A</div></a>
+  <a class="piece" href="snug-wb8j.html"><img src="snug-wb8j.svg" alt="Your puzzle piece"><div class="piece-label">E</div></a>
+</div>
+
+<footer>The Snug Harbour — every night the tide is in</footer>
+</body>
+</html>

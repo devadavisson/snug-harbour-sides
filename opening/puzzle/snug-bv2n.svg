@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240">
+<rect width="200" height="240" fill="#0e0b08"/>
+
+<circle cx="25" cy="18" r="1" fill="#d4a054" opacity="0.5"/>
+<circle cx="160" cy="10" r="0.8" fill="#d4a054" opacity="0.4"/>
+<circle cx="95" cy="8" r="1.1" fill="#d4a054" opacity="0.35"/>
+<circle cx="178" cy="28" r="0.7" fill="#d4a054" opacity="0.3"/>
+
+<path d="M0,180 L100,100 L200,180" fill="none" stroke="#d4a054" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="70" y1="118" x2="130" y2="118" stroke="#d4a054" stroke-width="0.6" opacity="0.2"/>
+<line x1="40" y1="165" x2="55" y2="155" stroke="#d4a054" stroke-width="0.4" opacity="0.12"/>
+<line x1="80" y1="150" x2="95" y2="140" stroke="#d4a054" stroke-width="0.4" opacity="0.1"/>
+<line x1="120" y1="148" x2="135" y2="138" stroke="#d4a054" stroke-width="0.4" opacity="0.12"/>
+<line x1="150" y1="162" x2="165" y2="152" stroke="#d4a054" stroke-width="0.4" opacity="0.1"/>
+
+<line x1="100" y1="105" x2="100" y2="118" stroke="#d4a054" stroke-width="1.5" opacity="0.5"/>
+<path d="M85,108 Q100,102 115,108" fill="none" stroke="#d4a054" stroke-width="1" opacity="0.4"/>
+<rect x="48" y="118" width="104" height="42" rx="3" fill="none" stroke="#d4a054" stroke-width="2"/>
+<rect x="53" y="123" width="94" height="32" rx="2" fill="none" stroke="#d4a054" stroke-width="0.8" opacity="0.4"/>
+
+<text x="100" y="136" font-family="Georgia, 'Times New Roman', serif" font-size="7" fill="#d4a054" text-anchor="middle" letter-spacing="0.15em" opacity="0.9">EVERY NIGHT</text>
+<text x="100" y="149" font-family="Georgia, 'Times New Roman', serif" font-size="7" fill="#d4a054" text-anchor="middle" letter-spacing="0.15em" opacity="0.9">THE TIDE IS IN</text>
+
+<circle cx="100" cy="140" r="35" fill="#d4a054" opacity="0.03"/>
+<circle cx="100" cy="115" r="4" fill="#d4a054" opacity="0.3"/>
+<circle cx="100" cy="115" r="10" fill="#d4a054" opacity="0.05"/>
+
+<rect x="0" y="170" width="8" height="15" fill="none" stroke="#d4a054" stroke-width="1" opacity="0.15"/>
+<line x1="200" y1="180" x2="195" y2="178" stroke="#d4a054" stroke-width="2" opacity="0.2"/>
+<line x1="85" y1="200" x2="115" y2="200" stroke="#d4a054" stroke-width="1.5" opacity="0.15"/>
+
+<text x="100" y="222" font-family="Georgia, 'Times New Roman', serif" font-size="8.5" fill="#d4a054" text-anchor="middle" opacity="0.7" font-style="italic">"EVERY NIGHT THE TIDE IS IN"</text>
+
+</svg>

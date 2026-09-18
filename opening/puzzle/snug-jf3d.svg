@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240">
+<rect width="200" height="240" fill="#0e0b08"/>
+
+<circle cx="25" cy="20" r="1.2" fill="#d4a054" opacity="0.6"/>
+<circle cx="80" cy="12" r="0.8" fill="#d4a054" opacity="0.4"/>
+<circle cx="140" cy="35" r="1.1" fill="#d4a054" opacity="0.5"/>
+<circle cx="175" cy="8" r="0.9" fill="#d4a054" opacity="0.45"/>
+<circle cx="50" cy="55" r="0.7" fill="#d4a054" opacity="0.3"/>
+<circle cx="120" cy="70" r="1" fill="#d4a054" opacity="0.4"/>
+<circle cx="30" cy="90" r="0.6" fill="#d4a054" opacity="0.25"/>
+<circle cx="165" cy="80" r="0.8" fill="#d4a054" opacity="0.35"/>
+
+<path d="M0,140 Q40,130 80,135 Q120,140 160,135 Q180,132 200,138" fill="none" stroke="#d4a054" stroke-width="1.2" opacity="0.4"/>
+
+<line x1="120" y1="138" x2="120" y2="155" stroke="#d4a054" stroke-width="1" opacity="0.5"/>
+<rect x="114" y="155" width="12" height="9" rx="2" fill="none" stroke="#d4a054" stroke-width="1.2"/>
+<circle cx="120" cy="160" r="3" fill="#d4a054" opacity="0.45"/>
+<circle cx="120" cy="160" r="10" fill="#d4a054" opacity="0.05"/>
+<circle cx="120" cy="160" r="22" fill="#d4a054" opacity="0.025"/>
+
+<circle cx="0" cy="130" r="20" fill="#d4a054" opacity="0.025"/>
+<line x1="0" y1="195" x2="60" y2="195" stroke="#d4a054" stroke-width="1" opacity="0.15"/>
+
+<text x="100" y="222" font-family="Georgia, 'Times New Roman', serif" font-size="8.5" fill="#d4a054" text-anchor="middle" opacity="0.7" font-style="italic">"The welcome reads twice"</text>
+
+</svg>

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240">
+<rect width="200" height="240" fill="#0e0b08"/>
+
+<path d="M0,155 Q25,150 50,155 Q75,160 100,155 Q125,150 150,155 Q175,160 200,155" fill="none" stroke="#d4a054" stroke-width="0.8" opacity="0.2"/>
+<path d="M0,170 Q30,165 60,170 Q90,175 120,170 Q150,165 180,170 Q195,173 200,170" fill="none" stroke="#d4a054" stroke-width="0.6" opacity="0.15"/>
+<path d="M0,185 Q35,180 70,185 Q105,190 140,185 Q170,180 200,185" fill="none" stroke="#d4a054" stroke-width="0.5" opacity="0.1"/>
+
+<ellipse cx="100" cy="140" rx="52" ry="18" fill="none" stroke="#d4a054" stroke-width="2.5" stroke-linecap="round"/>
+<ellipse cx="100" cy="138" rx="42" ry="12" fill="none" stroke="#d4a054" stroke-width="1" opacity="0.4"/>
+<line x1="68" y1="136" x2="132" y2="136" stroke="#d4a054" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+
+<path d="M148,135 Q160,125 165,110 Q168,100 162,95" fill="none" stroke="#d4a054" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/>
+
+<line x1="80" y1="136" x2="80" y2="90" stroke="#d4a054" stroke-width="1.5" stroke-linecap="round"/>
+<rect x="73" y="82" width="14" height="10" rx="2" fill="none" stroke="#d4a054" stroke-width="1.2"/>
+<circle cx="80" cy="87" r="4" fill="#d4a054" opacity="0.6"/>
+<circle cx="80" cy="87" r="12" fill="#d4a054" opacity="0.08"/>
+<circle cx="80" cy="87" r="22" fill="#d4a054" opacity="0.04"/>
+
+<line x1="80" y1="158" x2="80" y2="190" stroke="#d4a054" stroke-width="1" opacity="0.15"/>
+<line x1="78" y1="162" x2="82" y2="162" stroke="#d4a054" stroke-width="0.8" opacity="0.12"/>
+<line x1="76" y1="175" x2="84" y2="175" stroke="#d4a054" stroke-width="0.6" opacity="0.08"/>
+
+<path d="M0,145 Q10,140 20,145" fill="none" stroke="#d4a054" stroke-width="1" opacity="0.3"/>
+<line x1="195" y1="155" x2="200" y2="190" stroke="#d4a054" stroke-width="0.8" opacity="0.2"/>
+<line x1="162" y1="0" x2="162" y2="8" stroke="#d4a054" stroke-width="2" opacity="0.3"/>
+
+<text x="100" y="222" font-family="Georgia, 'Times New Roman', serif" font-size="8.5" fill="#d4a054" text-anchor="middle" opacity="0.7" font-style="italic">"A lamp-hung coracle that ferries the thirsty"</text>
+
+</svg>

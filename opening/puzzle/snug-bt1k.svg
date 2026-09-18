@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240">
+<rect width="200" height="240" fill="#0e0b08"/>
+
+<path d="M0,45 Q30,40 60,45 Q90,50 120,45 Q150,40 180,45 Q195,48 200,45" fill="none" stroke="#d4a054" stroke-width="0.8" opacity="0.2"/>
+<path d="M0,65 Q35,60 70,65 Q105,70 140,65 Q170,60 200,65" fill="none" stroke="#d4a054" stroke-width="0.6" opacity="0.15"/>
+<path d="M0,88 Q40,83 80,88 Q120,93 160,88 Q185,84 200,88" fill="none" stroke="#d4a054" stroke-width="0.5" opacity="0.1"/>
+<path d="M0,115 Q45,110 90,115 Q135,120 180,115 Q195,112 200,115" fill="none" stroke="#d4a054" stroke-width="0.4" opacity="0.08"/>
+
+<line x1="100" y1="30" x2="100" y2="190" stroke="#d4a054" stroke-width="2" opacity="0.12"/>
+<line x1="95" y1="50" x2="95" y2="180" stroke="#d4a054" stroke-width="1" opacity="0.06"/>
+<line x1="105" y1="50" x2="105" y2="180" stroke="#d4a054" stroke-width="1" opacity="0.06"/>
+
+<line x1="92" y1="60" x2="108" y2="60" stroke="#d4a054" stroke-width="0.8" opacity="0.08"/>
+<line x1="90" y1="85" x2="110" y2="85" stroke="#d4a054" stroke-width="0.6" opacity="0.06"/>
+<line x1="88" y1="112" x2="112" y2="112" stroke="#d4a054" stroke-width="0.5" opacity="0.05"/>
+<line x1="85" y1="140" x2="115" y2="140" stroke="#d4a054" stroke-width="0.4" opacity="0.04"/>
+
+<circle cx="100" cy="35" r="15" fill="#d4a054" opacity="0.06"/>
+<circle cx="100" cy="35" r="30" fill="#d4a054" opacity="0.03"/>
+<ellipse cx="100" cy="100" rx="25" ry="70" fill="#d4a054" opacity="0.015"/>
+
+<circle cx="45" cy="72" r="1" fill="#d4a054" opacity="0.15"/>
+<circle cx="155" cy="55" r="0.8" fill="#d4a054" opacity="0.12"/>
+<circle cx="70" cy="130" r="0.6" fill="#d4a054" opacity="0.08"/>
+<circle cx="140" cy="100" r="0.7" fill="#d4a054" opacity="0.1"/>
+
+<circle cx="0" cy="80" r="15" fill="#d4a054" opacity="0.02"/>
+<line x1="195" y1="60" x2="195" y2="120" stroke="#d4a054" stroke-width="0.6" opacity="0.06"/>
+<line x1="30" y1="8" x2="170" y2="8" stroke="#d4a054" stroke-width="0.8" opacity="0.12"/>
+
+<text x="100" y="222" font-family="Georgia, 'Times New Roman', serif" font-size="8.5" fill="#d4a054" text-anchor="middle" opacity="0.7" font-style="italic">"The gate has no door and the tide is in"</text>
+
+</svg>
