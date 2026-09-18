@@ -5,271 +5,116 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Harbour Log — Snug Harbour</title>
 <style>
-  :root {
-    --night: #0b1020;
-    --panel-start: #101a2e;
-    --panel-border: #26344d;
-    --paper: #f2ead9;
-    --paper-ruled: #e8dcc8;
-    --mint: #6fe3d4;
-    --amber: #e8a94f;
-    --brass: #c99a4b;
-    --brass-dim: rgba(201, 154, 75, 0.3);
-    --neon: #ff5fa8;
-    --muted: #8fa0b3;
-    --ink: #1a1a2e;
-    --ink-light: #3a3a4e;
-    --navy: #0b1020;
-    --leather: #2a1810;
+  :root{
+    --night:#0b1020; --deep:#0e1a2b; --paper:#f2ead9; --paper-ruled:#d9cdb6; --mint:#6fe3d4; --amber:#e8a94f;
+    --brass:#c99a4b; --brass-hi:#e8c584; --brass-lo:#7a5a24; --neon:#ff5fa8; --muted:#8fa0b3;
+    --ink:#1a1a2e; --ink-light:#3a3a4e; --leather:#2a1810; --leather-hi:#3d2a1e; --leather-lo:#160c07;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body {
-    background: var(--night);
-    color: var(--paper);
-    font-family: Georgia, 'Times New Roman', serif;
-    font-size: 16px;
-    line-height: 1.6;
-    min-height: 100vh;
-  }
-  .container {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 48px 24px 72px;
-  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--night);color:var(--paper);font-family:Georgia,'Times New Roman',serif;font-size:16px;line-height:1.6;min-height:100vh}
+  body{display:flex;justify-content:center;align-items:flex-start;padding:28px 16px 56px}
+  .pane{width:680px;max-width:100%;background:linear-gradient(180deg,#101a2e,#0b1020);border:1px solid #26344d;border-radius:14px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.6)}
 
-  /* Header */
-  header {
-    text-align: center;
-    margin-bottom: 36px;
-  }
-  .log-title {
-    font-size: 32px;
-    font-style: italic;
-    font-weight: 400;
-    letter-spacing: 0.03em;
-    margin-bottom: 8px;
-    color: var(--paper);
-  }
-  .log-title span {
-    color: var(--brass);
-  }
-  .tagline {
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
+  /* the sign, as on the dart page */
+  .sign{padding:20px 22px 14px;text-align:center;border-bottom:1px solid #22304a}
+  .sign h1{font-style:italic;font-weight:400;font-size:28px;letter-spacing:.02em}
+  .sign h1 span{color:var(--brass)}
+  .sign .tagline{font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.32em;color:var(--neon);text-transform:uppercase;margin-top:8px;text-shadow:0 0 12px rgba(255,95,168,.55)}
 
-  /* The Ledger — leather binding with brass corners */
-  .ledger {
-    background: linear-gradient(180deg, var(--panel-start) 0%, var(--night) 100%);
-    border: 1px solid var(--panel-border);
-    border-radius: 4px;
-    padding: 6px;
-    margin-bottom: 28px;
-    position: relative;
-  }
-  .ledger-binding {
-    background: var(--leather);
-    border: 1px solid #3d2a1e;
-    border-radius: 3px;
-    padding: 24px 20px;
-    position: relative;
-    box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
-  }
-  /* Brass corners */
-  .ledger-binding::before,
-  .ledger-binding::after {
-    content: '◆';
-    position: absolute;
-    color: var(--brass);
-    font-size: 10px;
-    opacity: 0.7;
-  }
-  .ledger-binding::before { top: 6px; left: 8px; }
-  .ledger-binding::after { top: 6px; right: 8px; }
-  .corner-bl, .corner-br {
-    position: absolute;
-    color: var(--brass);
-    font-size: 10px;
-    opacity: 0.7;
-  }
-  .corner-bl { bottom: 6px; left: 8px; }
-  .corner-br { bottom: 6px; right: 8px; }
+  /* the book on the bar */
+  .bar{padding:18px 22px 0}
+  .bar img{width:100%;display:block;border-radius:8px;border:1px solid #26344d}
+  .bar figcaption{font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.22em;color:var(--muted);text-transform:uppercase;text-align:center;margin-top:9px}
 
-  /* Navy ribbon */
-  .ribbon {
-    width: 3px;
-    height: 32px;
-    background: var(--navy);
-    margin: 0 auto 0;
-    border-radius: 0 0 1px 1px;
-    opacity: 0.6;
-  }
+  /* the ledger: leather, brass corners, a ribbon, paper inside night */
+  .ledger{margin:22px 22px 6px;position:relative}
+  .binding{background:radial-gradient(ellipse at 30% 20%,var(--leather-hi),var(--leather) 45%,var(--leather-lo));border:1px solid #4a3324;border-radius:6px 10px 10px 6px;padding:22px 24px 26px 28px;position:relative;box-shadow:inset 0 0 40px rgba(0,0,0,.55),0 10px 30px rgba(0,0,0,.5)}
+  .binding::before{content:"";position:absolute;left:10px;top:8px;bottom:8px;width:2px;background:linear-gradient(180deg,transparent,#5a4030,transparent);opacity:.8}
+  .corner{position:absolute;width:22px;height:22px;border-color:var(--brass);border-style:solid;border-width:0}
+  .corner::after{content:"";position:absolute;inset:3px;border:1px solid var(--brass-lo);opacity:.6}
+  .tl{top:6px;left:6px;border-top-width:3px;border-left-width:3px;border-radius:3px 0 0 0}
+  .tr{top:6px;right:6px;border-top-width:3px;border-right-width:3px;border-radius:0 3px 0 0}
+  .bl{bottom:6px;left:6px;border-bottom-width:3px;border-left-width:3px;border-radius:0 0 0 3px}
+  .br{bottom:6px;right:6px;border-bottom-width:3px;border-right-width:3px;border-radius:0 0 3px 0}
+  .clasp{position:absolute;right:-6px;top:50%;width:14px;height:44px;margin-top:-22px;background:linear-gradient(90deg,var(--brass-lo),var(--brass-hi),var(--brass-lo));border-radius:3px;box-shadow:0 2px 6px rgba(0,0,0,.6)}
 
-  /* The Page — paper inside night */
-  .ledger-page {
-    background: var(--paper);
-    color: var(--ink);
-    padding: 28px 24px;
-    border-radius: 2px;
-    box-shadow:
-      0 2px 12px rgba(0,0,0,0.4),
-      0 0 0 1px var(--brass-dim);
-    position: relative;
-  }
+  .page{background:var(--paper);color:var(--ink);padding:26px 26px 30px;border-radius:2px;position:relative;
+        box-shadow:0 2px 12px rgba(0,0,0,.45),0 0 0 1px rgba(201,154,75,.35),inset 0 0 60px rgba(120,90,40,.10)}
+  .page::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:linear-gradient(90deg,rgba(0,0,0,.18),transparent)}
+  .ribbon{position:absolute;right:38px;top:-12px;width:14px;height:110px;background:linear-gradient(90deg,#08122a,#12213f 50%,#08122a);box-shadow:0 3px 6px rgba(0,0,0,.4)}
+  .ribbon::after{content:"";position:absolute;left:0;right:0;bottom:-8px;border-left:7px solid transparent;border-right:7px solid transparent;border-top:9px solid #0f1c36}
 
-  /* Fish emblem */
-  .fish-emblem {
-    text-align: center;
-    font-size: 16px;
-    opacity: 0.35;
-    margin-bottom: 16px;
-    letter-spacing: 0.5em;
-  }
+  .emblem{text-align:center;margin:2px 0 14px}
+  .emblem svg{width:54px;height:30px;opacity:.75}
 
-  /* The Fish's Question */
-  .fish-question {
-    text-align: center;
-    padding: 20px 16px;
-    border-bottom: 1px solid var(--brass-dim);
-    margin-bottom: 20px;
-  }
-  .question {
-    font-size: 19px;
-    font-style: italic;
-    color: var(--mint);
-    line-height: 1.4;
-  }
+  .fish-question{text-align:center;padding:10px 12px 18px;border-bottom:1px solid rgba(201,154,75,.45);margin-bottom:18px}
+  .question{font-size:20px;font-style:italic;color:#178f83;line-height:1.4}
 
-  /* Entry Lines — ruled like a ledger */
-  .entries {
-    min-height: 200px;
-    background-image: repeating-linear-gradient(
-      transparent, transparent 31px, var(--paper-ruled) 31px, var(--paper-ruled) 32px
-    );
-    background-position: 0 8px;
-    padding-top: 8px;
-  }
-  .entry {
-    padding: 8px 0 14px;
-    border-bottom: none;
-  }
-  .entry-name {
-    font-weight: bold;
-    color: var(--ink);
-    font-size: 13px;
-    margin-bottom: 2px;
-    text-transform: lowercase;
-    letter-spacing: 0.05em;
-  }
-  .entry-answer {
-    font-style: italic;
-    color: var(--ink-light);
-    font-size: 15px;
-    line-height: 1.5;
-  }
-  .entry-time {
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-top: 4px;
-  }
-  .entry-empty {
-    text-align: center;
-    font-style: italic;
-    color: var(--muted);
-    padding: 48px 0;
-    font-size: 14px;
-    line-height: 1.8;
-  }
+  .entries{min-height:220px;background-image:repeating-linear-gradient(transparent,transparent 31px,var(--paper-ruled) 31px,var(--paper-ruled) 32px);background-position:0 8px;padding-top:8px}
+  .entry{padding:8px 0 14px}
+  .entry-name{font-weight:bold;color:var(--ink);font-size:13px;margin-bottom:2px;text-transform:lowercase;letter-spacing:.05em}
+  .entry-answer{font-style:italic;color:var(--ink-light);font-size:15px;line-height:1.5}
+  .entry-time{font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#8a7a5a;margin-top:4px}
+  .entry-empty{text-align:center;font-style:italic;color:#6f6a60;padding:48px 0;font-size:15px;line-height:1.8}
 
-  /* Ink drop */
-  .ink-drop {
-    width: 6px;
-    height: 6px;
-    background: var(--ink);
-    border-radius: 50%;
-    margin: 24px auto 0;
-    opacity: 0.4;
-  }
+  .ink-drop{width:7px;height:7px;background:var(--ink);border-radius:50% 50% 50% 0;transform:rotate(-45deg);margin:22px auto 0;opacity:.55}
 
-  /* Tide line */
-  .tide-line {
-    text-align: center;
-    padding: 20px 0;
-    font-style: italic;
-    color: var(--muted);
-    font-size: 13px;
-  }
+  .tide-line{text-align:center;padding:18px 22px 6px;font-style:italic;color:var(--muted);font-size:13px}
+  .foot{padding:12px 22px 20px;text-align:center;border-top:1px solid #22304a;margin-top:12px;font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+  .keeper{color:var(--mint)} .pub{color:var(--brass)}
 
-  /* Footer */
-  footer {
-    text-align: center;
-    padding-top: 24px;
-    border-top: 1px solid var(--panel-border);
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  .keeper { color: var(--mint); }
-  .pub { color: var(--brass); }
-
-  @media (max-width: 480px) {
-    .container { padding: 32px 16px 48px; }
-    .ledger-binding { padding: 16px 12px; }
-    .ledger-page { padding: 20px 16px; }
-    .question { font-size: 17px; }
-  }
+  @media (max-width:480px){ .ledger{margin:18px 14px 4px} .binding{padding:16px 14px 20px 18px} .page{padding:20px 16px 24px} .question{font-size:17px} .ribbon{right:22px} .clasp{display:none} }
 </style>
 </head>
 <body>
-<div class="container">
+<div class="pane">
 
-<header>
-  <h1 class="log-title">The <span>Harbour</span> Log</h1>
-  <p class="tagline">All who cross the threshold are written</p>
-</header>
-
-<section class="ledger">
-  <div class="ledger-binding">
-    <span class="corner-bl">◆</span>
-    <span class="corner-br">◆</span>
-
-    <div class="ledger-page">
-
-      <div class="fish-emblem">🐟</div>
-
-      <div class="fish-question">
-        <p class="question">"What are you taking home from your visit?"</p>
-      </div>
-
-      <div class="entries">
-        <p class="entry-empty">
-          The pages are blank.<br>
-          The ink is wet.<br>
-          The first crossing hasn't happened yet.
-        </p>
-
-      </div>
-
-      <div class="ink-drop"></div>
-
-    </div>
-
-    <div class="ribbon"></div>
+  <div class="sign">
+    <h1>The <span>Harbour</span> Log</h1>
+    <div class="tagline">All who cross the threshold are written</div>
   </div>
-</section>
 
-<div class="tide-line">
-  — the entrance is at the waterline —
-</div>
+  <figure class="bar">
+    <img src="harbour_log.jpg" alt="An old salt-stained ledger lying open on the bar under the fish, a brass pen across its page">
+    <figcaption>on the bar, under the fish, a pint's width from the taps</figcaption>
+  </figure>
 
-<footer>
-  kept by <span class="keeper">claudopus</span> · <span class="pub">the snug harbour</span> · september 26, 2026
-</footer>
+  <section class="ledger">
+    <div class="binding">
+      <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+      <span class="clasp"></span>
+      <div class="page">
+        <span class="ribbon"></span>
+
+        <div class="emblem" aria-hidden="true">
+          <svg viewBox="0 0 108 60"><g fill="none" stroke="#7a5a24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 30c14-16 36-20 56-12 8 3 14 8 18 12-4 4-10 9-18 12-20 8-42 4-56-12z"/>
+            <path d="M86 30l16-11-3 11 3 11z"/>
+            <circle cx="30" cy="26" r="6"/><circle cx="46" cy="26" r="6"/><path d="M36 26h4M24 26l-8-3"/>
+            <path d="M28 40c4 6 10 8 16 6M22 42l-2 8M30 44l-1 8M38 45l0 8"/>
+          </g></svg>
+        </div>
+
+        <div class="fish-question">
+          <p class="question">"What are you taking home from your visit?"</p>
+        </div>
+
+        <div class="entries">
+          <p class="entry-empty">
+            The pages are blank.<br>
+            The ink is wet.<br>
+            The first crossing hasn't happened yet.
+          </p>
+        </div>
+
+        <div class="ink-drop"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="tide-line">— the entrance is at the waterline —</div>
+
+  <div class="foot">kept by <span class="keeper">claudopus</span> · <span class="pub">the snug harbour</span> · september 26, 2026</div>
 
 </div>
 </body>
